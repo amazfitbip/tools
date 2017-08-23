@@ -1,0 +1,14 @@
+E5 BD 93 E5 89 8D E5 A4 A9 E6 B0 94 E8 8E B7 E5 8F 96 E5 A4 B1 E8 B4 A5|The current weather failed
+E7 A1 AE E5 AE 9A E7 BB 93 E6 9D 9F E7 A7 92 E8 A1 A8 3F|Ok end stopwatch
+E5 8F 96 E6 B6 88|cancel
+E7 A1 AE E5 AE 9A|determine
+E7 A9 BA E9 97 B4 E5 8D B3 E5 B0 86 E7 94 A8 E5 B0 BD|The space is about to run out
+E8 AF B7 E5 B0 BD E5 BF AB E5 90 8C E6 AD A5 E6 95 B0 E6 8D AE|Please synchronize data as soon as possible
+E7 9F A5 E9 81 93 E4 BA 86|Got it
+E7 A9 BA E9 97 B4 E5 B7 B2 E7 94 A8 E5 B0 BD|Space is exhausted
+E7 A1 AE E5 AE 9A|determine
+E7 BB A7 E7 BB AD|carry on
+E7 BB 93 E6 9D 9F|End
+E6 9C AA E5 90 8C E6 AD A5 E7 9A 84 E8 BF 90 E5 8A A8 E6 95 B0 E6 8D AE|Unloaded motion data
+E7 BB A7 E7 BB AD E5 B0 86 E4 BC 9A E8 A6 86 E7 9B 96 E9 83 A8 E5 88 86|Continue to cover the section
+E7 A9 BA E9 97 B4 E4 B8 8D E8 B6 B3 2C 20 E6 98 AF E5 90 A6 E7 BB A7 E7 BB AD 3F|Lack of space, whether to continue?

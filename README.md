@@ -8,3 +8,11 @@ it will generate splitted a number of raw file and for each file a correspondent
 
 The program generate some temporary file like a textual palette and a mask to be applied to the grayscale image to get the indexed one. By tweaking the program is possible to keep souch files.
 
+
+
+
+./ch2en.py
+
+Process ch2en.txt by looking for hex string pattern, connect to google translate and add the english translation to the txt file
+
+this tool can be useful for replacing string from chinese to english

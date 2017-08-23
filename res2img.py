@@ -78,8 +78,13 @@ with open(fileName, mode='rb') as file: # b is important -> binary
 	m.update(fileContent[start:end])
 	#filename = "%03d_%s_%s.bmp" % (index, m.hexdigest(), ver)
 
+	unknown1 = ord(fileContent[start+4:start+5])
+
+	unknown2 = ord(fileContent[start+6:start+7])
+
 	raw_image_width = ord(fileContent[start+8:start+9])
-	filename = "%03d_%03d_%s" % (index, raw_image_width, ver)
+	#filename = "%03d_%03d_%s" % (index, raw_image_width, ver)
+	filename = "%03d_%02x_%02x_%s" % (index, unknown1, unknown2, ver)
 	palette_len = ord(fileContent[start+12:start+13])
 	#print DEBUG: palette_len=%d" % palette_len
 
