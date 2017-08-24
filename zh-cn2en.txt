@@ -129,3 +129,5 @@ E9 85 8D E9 80 9F E8 BF 87 E6 85 A2|The speed is too slow
 E9 85 8D E9 80 9F|With speed
 E9 95 BF E6 8C 89 E6 8C 89 E9 94 AE|Long press the button
 E9 AA 91 E8 A1 8C|Ride
+E6 89 8B E8 A1 A8 E5 8D 87 E7 BA A7 E5 A4 B1 E8 B4 A5|Watch upgrade failed
+E8 B5 84 E6 BA 90 E5 BA 93 E5 8D 87 E7 BA A7 E5 A4 B1 E8 B4 A5|Resource library failed to upgrade

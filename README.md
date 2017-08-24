@@ -11,8 +11,8 @@ The program generate some temporary file like a textual palette and a mask to be
 
 
 
-./ch2en.py
+./zh-cn2en.py
 
-Process ch2en.txt by looking for hex string pattern, connect to google translate and add the english translation to the txt file
+Process zh-cn2en.txt by looking for hex string pattern, connect to google translate and add the english translation to the txt file
 
 this tool can be useful for replacing string from chinese to english
