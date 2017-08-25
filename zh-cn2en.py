@@ -13,6 +13,10 @@ translator = Translator()
 #.decode("hex")
 
 
+##TODO
+## the pattern must be ordered from the longer to the shorter 
+## each pattern must be searched into the binary + 00 and replaced with the new string + 00 
+
 fileName = "zh-cn2en.txt"
 
 out = open("zh-cn2en.out", mode='w')
