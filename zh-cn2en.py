@@ -68,36 +68,62 @@ with open(fileName, mode='r') as file:
 translation_tuples_s = sorted(translation_tuples, key=lambda string_cn: len(string_cn[0]), reverse=True)
 
 if args.verbose:
+
+    firmwareFile = "Mili_chaohu.fw"
+
+    with open(firmwareFile, "rb") as input_file:
+        s = input_file.read()
+
     for index in range(len(translation_tuples_s)):
 	print translation_tuples_s[index]
 
 	from bitstring import ConstBitStream
 	from bitstring import BitArray
+
 	# Can initialise from files, bytes, etc.
 	#s = ConstBitStream(filename='Mili_chaohu.fw')
 	# Search to Start of Frame 0 code on byte boundary
 	#found = s.find('0xffc0', bytealigned=True)
 
-	with open("Mili_chaohu.fw", "rb") as input_file:
-	    s = input_file.read()
-
 	find_str = "".join(c for c in translation_tuples_s[index][0].split())
-	print find_str.decode('hex')
-	replace_str =  '{0:<0{1}x}'.format(int(translation_tuples_s[index][1].encode('hex'),16),len(find_str.decode('hex'))+2)
-	print "A ", find_str
+	ix = 0
+	s_ar=list(s)
+	while ix < len(s):
+    	    ix = s.find(find_str.decode("hex"), ix)
+    	    if ix == -1:
+    	        break
+    	    print('%s found at %d' % (find_str.decode("hex"), ix))
+    
+    	    for r in range(len(find_str.decode("hex"))):
+	        if r < len(translation_tuples_s[index][1]):
+	    	    s_ar[ix+r] = (translation_tuples_s[index][1])[r]
+	        else:
+		    s_ar[ix+r] = chr(0)
 
-	print "B ", replace_str
+    	    ix += len(find_str.decode("hex")) # +2 because len('ll') == 2
+
+	s="".join(s_ar)
+
+	#replace_str =  '{0:<0{1}x}'.format(int(translation_tuples_s[index][1].encode('hex'),16),len(find_str.decode('hex'))+2)
+	#print "A ", find_str, len(find_str.decode('hex'))
+	#print "B ", replace_str, len(replace_str.decode('hex'))
+
 #	results = s.findall(find_str, bytealigned=True)
 #https://github.com/sans-dfir/sift-files/blob/master/scripts/pe_carve.py
-##	for i in results:
+#	for i in results:
 #	    print("Found start code at byte offset %d." % (int(i)/8))
 #	    s0f0, length, bitdepth, height, width = s.readlist('hex:16, uint:16,   uint:8, 2*uint:16')
 #	    print("Width %d, Height %d" % (width, height))
+
 #https://stackoverflow.com/questions/29624398/searching-and-replacing-in-binary-file
-	s.replace("0x0"+find_str+"00","0x0"+replace_str+"00")
+	#s = s.replace((find_str+"00").decode("hex"),(replace_str+"00").decode("hex"))
+
+	#DEBUG: just replace few occurrences
+	#if index == 2:
+	#    break
 	    
-	with open("fileToWriteTo", "wb") as output_file:
-	    output_file.write(s)
+    with open(firmwareFile.replace(".fw","_EN.fw"), "wb") as output_file:
+        output_file.write(s)
 	sys.exit(12)
 
 	#url =  "%".join(c for c in line.split())
