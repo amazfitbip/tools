@@ -41,29 +41,35 @@ print args.language
 fileName = "zh-cn2en.txt"
 
 translation_tuples = []
-
-out = open("zh-cn2en.out", mode='w')
+out = open("zh-cn2en.tmp", mode='w')
 with open(fileName, mode='r') as file:
     for l in file:
+	line_header=""
 	line=l.lstrip('#').rstrip('\n')
-	string_hex=" ".join(c for c in line.split("|")[0].split())
+	string_fw=line.split("|")[0]
+	string_addrs=line.split("|")[1]
+	string_hex=" ".join(c for c in line.split("|")[2].split())
 	string_cn="".join(c for c in string_hex.split()).decode("hex")
-	if len(line.split("|")) == 2:
-	    string_en=line.split("|")[1]
+	if len(line.split("|")) == 4:
+	    string_en=line.split("|")[3]
 	    #check here if translation is longer then the original hex
 	else:
 	    string_en=translator.translate(string_cn, dest='en').text
 
 	# update translation file
 	if len(string_en) > len(string_cn):
-	    string_hex = "#"+string_hex
+	    line_header = "#"
 
-	translation_tuple = tuple( [string_hex, string_en])
+	translation_tuple = tuple( [string_hex, string_en,string_addrs])
 	if len(string_en) <= len(string_cn) and translation_tuple not in translation_tuples:
 	    translation_tuples.append(translation_tuple)
 
-	out.write("%s|%s\n" % (string_hex, string_en))
-	print "%s => %s(%d) = %s(%d)" % (string_hex,string_cn,len(string_cn),string_en,len(string_en))
+	out.write("%s%s|%s|%s|%s\n" % (line_header, string_fw,string_addrs,string_hex, string_en))
+
+	print "%s%s => %s(%d) = %s(%d)" % (line_header, string_hex,string_cn,len(string_cn),string_en,len(string_en))
+
+os.rename('zh-cn2en.tmp', 'zh-cn2en.txt')
+
 
 translation_tuples_s = sorted(translation_tuples, key=lambda string_cn: len(string_cn[0]), reverse=True)
 
@@ -75,24 +81,43 @@ if args.verbose:
         s = input_file.read()
 
     for index in range(len(translation_tuples_s)):
-	print translation_tuples_s[index]
+	#print translation_tuples_s[index]
 
-	from bitstring import ConstBitStream
-	from bitstring import BitArray
+	#from bitstring import ConstBitStream
+	#from bitstring import BitArray
 
 	# Can initialise from files, bytes, etc.
 	#s = ConstBitStream(filename='Mili_chaohu.fw')
 	# Search to Start of Frame 0 code on byte boundary
 	#found = s.find('0xffc0', bytealigned=True)
 
+	find_str_user_friendly = " ".join(c for c in translation_tuples_s[index][0].split())
 	find_str = "".join(c for c in translation_tuples_s[index][0].split())
 	ix = 0
 	s_ar=list(s)
+	found_cnt=0
 	while ix < len(s):
     	    ix = s.find(find_str.decode("hex"), ix)
+
     	    if ix == -1:
     	        break
-    	    print('%s found at %d' % (find_str.decode("hex"), ix))
+
+	    #avoid wrong substitution
+	    if ord(s_ar[ix+len(find_str.decode("hex"))]) != 0:
+		#print "ix",ix,  len(find_str.decode("hex"))
+		#print s_ar[ix:ix+len(find_str.decode("hex"))+1]
+		#print len(find_str.decode("hex")),"%x" % ord(s_ar[ix+len(find_str.decode("hex"))]) 
+		#print('0x%s %s (%s) ERROR at %x (%d/%d)%s' % (find_str, find_str.decode("hex"), translation_tuples_s[index][1], ix, found_cnt, 0,""))
+    		ix += len(find_str.decode("hex")) # +2 because len('ll') == 2
+    		#ix = s.find(find_str.decode("hex"), ix)
+		continue
+
+	    found_cnt+=1
+	    len_addrs=len((translation_tuples_s[index][2]).split(","))
+	    warning=""
+	    if found_cnt >len_addrs:
+		warning="!!!!!!!!!!!!!"
+    	    print('0x%s %s (%s) found at %x (%d/%d)%s' % (find_str_user_friendly, find_str.decode("hex"), translation_tuples_s[index][1], ix, found_cnt, len_addrs,warning))
     
     	    for r in range(len(find_str.decode("hex"))):
 	        if r < len(translation_tuples_s[index][1]):
@@ -131,4 +156,3 @@ if args.verbose:
 	#print "%".join("{:02x}".format(cord(c)) for c in line.split())
 	#print gurl+url
 	#os.system("curl -A 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:36.0) Gecko/20100101 Firefox/36.0' "+gurl+url)
-os.rename('zh-cn2en.out', 'zh-cn2en.txt')
