@@ -1,187 +1,187 @@
 41 47 50 53 E5 8D 87 E7 BA A7 E4 B8 AD|AGPS upgrade
-41 47 50 53 E5 8D 87 E7 BA A7 E6 88 90 E5 8A 9F|AGPS upgrade successfully
+41 47 50 53 E5 8D 87 E7 BA A7 E6 88 90 E5 8A 9F|AGPS upgrade KO
 47 50 53 E5 8D 87 E7 BA A7 E4 B8 AD|GPS upgrade
-47 50 53 E5 8D 87 E7 BA A7 E5 A4 B1 E8 B4 A5|GPS upgrade failed
-47 50 53 E5 8D 87 E7 BA A7 E6 88 90 E5 8A 9F|GPS upgrade is successful
+47 50 53 E5 8D 87 E7 BA A7 E5 A4 B1 E8 B4 A5|GPS upgrade KO
+47 50 53 E5 8D 87 E7 BA A7 E6 88 90 E5 8A 9F|GPS upgrade OK
 47 50 53 E5 AE 9A E4 BD 8D E4 B8 AD 2E 20 2E 20 2E|GPS positioning.
-E4 B8 8A E5 85 AC E9 87 8C E9 80 9F E5 BA A6|Kilometers on the speed
-E4 B8 8A E5 85 AC E9 87 8C E9 85 8D E9 80 9F|On the kilometer with speed
+E4 B8 8A E5 85 AC E9 87 8C E9 80 9F E5 BA A6|Km on the speed
+#E4 B8 8A E5 85 AC E9 87 8C E9 85 8D E9 80 9F|On the Km with speed
 E4 BA AE E5 BA A6 E8 B0 83 E8 8A 82|Dimming
-E4 BB 8A E5 A4 A9|Nowadays
-E4 BD A9 E6 88 B4 E6 89 8B E8 A1 A8 E5 85 A5 E7 9D A1 E5 90 8E|Wear a watch after falling asleep
+#E4 BB 8A E5 A4 A9|Nowadays
+#E4 BD A9 E6 88 B4 E6 89 8B E8 A1 A8 E5 85 A5 E7 9D A1 E5 90 8E|Wear a watch after falling asleep
 E5 81 9C E6 AD A2|stop
-E5 81 A5 E8 B5 B0|Walk away
+#E5 81 A5 E8 B5 B0|Walk away
 E5 85 85 E7 94 B5 E4 B8 AD|charging
-E5 85 85 E7 94 B5 E5 AE 8C E6 88 90|finished charging
+E5 85 85 E7 94 B5 E5 AE 8C E6 88 90|charged
 E5 85 A8 E7 A8 8B|Full
 E5 85 A8 E9 83 A8 E5 B7 B2 E8 AF BB 21|All read!
-E5 85 AC E9 87 8C E6 8C AF E5 8A A8 E6 8F 90 E9 86 92|Km vibration reminder
+#E5 85 AC E9 87 8C E6 8C AF E5 8A A8 E6 8F 90 E9 86 92|Km vibration reminder
 E5 85 AC E9 87 8C|Km
 E5 85 B3 E4 BA 8E|on
-E5 85 B3 E6 9C BA|Shut down
-E5 85 B3 E9 97 AD|shut down
+#E5 85 B3 E6 9C BA|Shut down
+#E5 85 B3 E9 97 AD|shut down
 E5 88 9A E5 88 9A E5 85 B3 E7 88 B1 E4 BA 86 E4 BD A0 E4 B8 80 E4 B8 8B|Just care about you
 E5 8B BF E6 89 B0 E5 B7 B2 E5 85 B3 E9 97 AD|Do not turn off
 E5 8B BF E6 89 B0 E5 B7 B2 E5 BC 80 E5 90 AF|Do not turn on
 E5 8D 83 E5 8D A1|Kcal
 E5 8F 96 E6 B6 88|cancel
-E5 8F AF E5 8A A0 E5 BF AB 47 50 53 E5 AE 9A E4 BD 8D|Can accelerate GPS positioning
-E5 9D 87 E9 80 9F|Average speed
-E5 AE 9A E4 BD 8D E6 88 90 E5 8A 9F E4 B9 8B E5 89 8D|Before positioning is successful
-E5 AE 9A E4 BD 8D E6 88 90 E5 8A 9F|Location is successful
-E5 AE A4 E5 86 85 E8 B7 91|Run inside
-E5 B0 86 E6 97 A0 E6 B3 95 E8 AE B0 E5 BD 95 E8 BF 90 E5 8A A8 E8 BD A8 E8 BF B9|The trajectory can not be recorded
-E5 B7 A5 E4 BD 9C E6 97 A5|Working day
+#E5 8F AF E5 8A A0 E5 BF AB 47 50 53 E5 AE 9A E4 BD 8D|Can accelerate GPS positioning
+#E5 9D 87 E9 80 9F|AVG speed
+#E5 AE 9A E4 BD 8D E6 88 90 E5 8A 9F E4 B9 8B E5 89 8D|Before positioning is successful
+#E5 AE 9A E4 BD 8D E6 88 90 E5 8A 9F|Location is successful
+#E5 AE A4 E5 86 85 E8 B7 91|Run inside
+#E5 B0 86 E6 97 A0 E6 B3 95 E8 AE B0 E5 BD 95 E8 BF 90 E5 8A A8 E8 BD A8 E8 BF B9|The trajectory can not be recorded
+#E5 B7 A5 E4 BD 9C E6 97 A5|Working day
 E5 B7 B2 E5 85 B3 E9 97 AD|closed
 E5 B7 B2 E5 BC 80 E5 90 AF|Turned on
 E5 B7 B2 E6 9A 82 E5 81 9C|Paused
-E5 BA 93 E5 8D 87 E7 BA A7 E4 B8 AD|Library upgrade
+E5 BA 93 E5 8D 87 E7 BA A7 E4 B8 AD|Lib upgrade
 E5 BC 80 E5 90 AF E6 96 B9 E5 BC 8F|Open mode
 E5 BC 80 E5 A7 8B|Start
 E5 BC 80 E9 98 94 E5 9C BA E5 9C B0 E4 BF A1 E5 8F B7 E6 9B B4 E4 BD B3|Open field signal better
-E5 BD 93 E5 89 8D E5 A4 A9 E6 B0 94 E8 8E B7 E5 8F 96 E5 A4 B1 E8 B4 A5|The current weather failed
-E5 BE AE E4 BF A1 E7 BA A2 E5 8C 85|Micro letter red envelope
-E5 BF 83 E7 8E 87 E6 8F 90 E9 86 92|Heart rate reminder
-E5 BF 83 E7 8E 87 E6 B5 8B E9 87 8F E6 9B B4 E5 87 86 E7 A1 AE|Heart rate measurement is more accurate
-E5 BF 83 E7 8E 87 E8 B6 85 E5 87 BA E6 97 B6 E6 8F 90 E9 86 92|Alert when the heart rate is over
-E5 BF 83 E7 8E 87 E8 BF 87 E9 AB 98|Heart rate is too high
-E5 BF 83 E7 8E 87|Heart rate
-E5 BF 83 E8 82 BA|Heart and lungs
+#E5 BD 93 E5 89 8D E5 A4 A9 E6 B0 94 E8 8E B7 E5 8F 96 E5 A4 B1 E8 B4 A5|The current weather failed
+#E5 BE AE E4 BF A1 E7 BA A2 E5 8C 85|Micro letter red envelope
+#E5 BF 83 E7 8E 87 E6 8F 90 E9 86 92|Heart rate reminder
+#E5 BF 83 E7 8E 87 E6 B5 8B E9 87 8F E6 9B B4 E5 87 86 E7 A1 AE|Heart rate measurement is more accurate
+#E5 BF 83 E7 8E 87 E8 B6 85 E5 87 BA E6 97 B6 E6 8F 90 E9 86 92|Alert when the heart rate is over
+#E5 BF 83 E7 8E 87 E8 BF 87 E9 AB 98|Heart rate is too high
+#E5 BF 83 E7 8E 87|Heart rate
+#E5 BF 83 E8 82 BA|Heart and lungs
 E5 BF BD E7 95 A5|ignore
 E6 88 B4 E7 B4 A7 E6 89 8B E8 A1 A8|Wear a watch
-E6 88 B7 E5 A4 96 E8 B7 91|Run outdoors
+#E6 88 B7 E5 A4 96 E8 B7 91|Run outdoors
 E6 89 8B E6 9C BA E9 97 B9 E9 92 9F E5 93 8D E4 BA 86|The phone rings
-E6 89 8B E8 A1 A8 E5 89 A9 E4 BD 99 E7 94 B5 E9 87 8F|Watch the remaining power
+#E6 89 8B E8 A1 A8 E5 89 A9 E4 BD 99 E7 94 B5 E9 87 8F|Watch the remaining power
 E6 89 8B E8 A1 A8 E5 8D 87 E7 BA A7 E4 B8 AD|Watch upgrade
-E6 89 8B E8 A1 A8 E5 8D 87 E7 BA A7 E6 88 90 E5 8A 9F|The watch was upgraded successfully
-E6 8C 82 E6 96 AD|hang up
-E6 94 B6 E5 88 B0 E6 89 8B E6 9C BA E7 BB 91 E5 AE 9A E8 AF B7 E6 B1 82|Received a phone binding request
+E6 89 8B E8 A1 A8 E5 8D 87 E7 BA A7 E6 88 90 E5 8A 9F|Watch upgrade OK
+#E6 8C 82 E6 96 AD|hang up
+#E6 94 B6 E5 88 B0 E6 89 8B E6 9C BA E7 BB 91 E5 AE 9A E8 AF B7 E6 B1 82|Received a phone binding request
 E6 97 A5|day
 E6 97 B6 E9 97 B4 E5 88 B0 E4 BA 86 21|Time is up!
-E6 98 8E E5 A4 A9|tomorrow
-E6 98 AF E5 90 A6 E5 85 81 E8 AE B8 3F|Is it allowed?
-E6 99 BA E8 83 BD E5 8B BF E6 89 B0 E5 B7 B2 E5 BC 80 E5 90 AF|Smart does not turn on
-E6 9B B4 E5 A4 9A E8 BF 90 E5 8A A8 E5 8E 86 E5 8F B2|More sports history
+E6 98 8E E5 A4 A9|tmrw
+#E6 98 AF E5 90 A6 E5 85 81 E8 AE B8 3F|Is it allowed?
+#E6 99 BA E8 83 BD E5 8B BF E6 89 B0 E5 B7 B2 E5 BC 80 E5 90 AF|Smart does not turn on
+#E6 9B B4 E5 A4 9A E8 BF 90 E5 8A A8 E5 8E 86 E5 8F B2|More sports history
 E6 9C AA E5 90 8C E6 AD A5 E7 9A 84 E8 BF 90 E5 8A A8 E6 95 B0 E6 8D AE|Unloaded motion data
-E6 9D A1 E6 96 B0 E6 B6 88 E6 81 AF EF BC 8C 20 E8 AF B7 E5 9C A8 E6 89 8B E6 9C BA E6 9F A5 E7 9C 8B E3 80 82|New message, please look at the phone.
+E6 9D A1 E6 96 B0 E6 B6 88 E6 81 AF EF BC 8C 20 E8 AF B7 E5 9C A8 E6 89 8B E6 9C BA E6 9F A5 E7 9C 8B E3 80 82|New message, please look at the phone
 E6 9D A5 E7 94 B5|Call
 E6 9E 81 E9 80 9F|Speed
 E6 9E 81 E9 99 90|limit
-E6 A0 A1 E5 87 86 E8 B7 91 E6 AD A5 E8 B7 9D E7 A6 BB|Calibrate running distance
-E6 AD A3 E5 9C A8 E5 85 B3 E6 9C BA|Shutting down
-E6 AD A5 E5 B7 B2 E8 BE BE E6 88 90|Step has been reached
-E6 AD A5 E6 95 B0|Step count
-E6 AD A5 E9 A2 91|Step frequency
+#E6 A0 A1 E5 87 86 E8 B7 91 E6 AD A5 E8 B7 9D E7 A6 BB|Calibrate running distance
+#E6 AD A3 E5 9C A8 E5 85 B3 E6 9C BA|Shutting down
+#E6 AD A5 E5 B7 B2 E8 BE BE E6 88 90|Step has been reached
+#E6 AD A5 E6 95 B0|Step count
+#E6 AD A5 E9 A2 91|Step frequency
 E6 AF 8F E5 91 A8|weekly
-E6 AF 8F E5 A4 A9|every day
-E6 AF 8F|each
+#E6 AF 8F E5 A4 A9|every day
+#E6 AF 8F|each
 E6 B2 A1 E6 9C 89 E6 96 B0 E7 9A 84 E9 80 9A E7 9F A5|No new notice
 E6 B2 A1 E6 9C 89 E8 AE BE E5 AE 9A E9 97 B9 E9 92 9F|No alarm set
-E6 B6 88 E8 80 97|Consumption
-E6 B8 85 E7 A9 BA|Emptied
-E7 83 AD E8 BA AB|warm up
-E7 87 83 E8 84 82|Fat burning
-E7 88 AC E5 9D A1 E8 B7 9D E7 A6 BB|Climbing distance
-E7 94 A8 E6 97 B6|time cost
-E7 94 B5 E9 87 8F|Electricity
+#E6 B6 88 E8 80 97|Consumption
+#E6 B8 85 E7 A9 BA|Emptied
+#E7 83 AD E8 BA AB|warm up
+#E7 87 83 E8 84 82|Fat burning
+#E7 88 AC E5 9D A1 E8 B7 9D E7 A6 BB|Climbing distance
+#E7 94 A8 E6 97 B6|time cost
+#E7 94 B5 E9 87 8F|Electricity
 E7 9F A5 E9 81 93 E4 BA 86|Got it
-E7 A1 AE E5 AE 9A|determine
-E7 A1 AE E5 AE 9A E4 BD BF E7 94 A8 E8 AF A5 E8 A1 A8 E7 9B 98 3F|Are you sure to use this dial?
-E7 A1 AE E5 AE 9A E5 85 B3 E9 97 AD E6 89 8B E8 A1 A8 3F|Are you sure to close the watch?
+#E7 A1 AE E5 AE 9A|determine
+#E7 A1 AE E5 AE 9A E4 BD BF E7 94 A8 E8 AF A5 E8 A1 A8 E7 9B 98 3F|Are you sure to use this dial?
+#E7 A1 AE E5 AE 9A E5 85 B3 E9 97 AD E6 89 8B E8 A1 A8 3F|Are you sure to close the watch?
 E7 A1 AE E5 AE 9A E7 BB 93 E6 9D 9F 3F|Ok end?
 E7 A1 AE E5 AE 9A E7 BB 93 E6 9D 9F E5 80 92 E8 AE A1 E6 97 B6 3F|Ok end countdown
 E7 A1 AE E5 AE 9A E7 BB 93 E6 9D 9F E7 A7 92 E8 A1 A8 3F|Ok end stopwatch
 E7 A8 8D E5 90 8E E6 8F 90 E9 86 92|Remind later
-E7 A9 BA E9 97 B4 E4 B8 8D E8 B6 B3 2C 20 E6 98 AF E5 90 A6 E7 BB A7 E7 BB AD 3F|Lack of space, whether to continue?
-E7 A9 BA E9 97 B4 E5 8D B3 E5 B0 86 E7 94 A8 E5 B0 BD|The space is about to run out
-E7 A9 BA E9 97 B4 E5 B7 B2 E7 94 A8 E5 B0 BD|Space is exhausted
-E7 AB 8B E5 8D B3 E5 BC 80 E5 90 AF|Open immediately
+#E7 A9 BA E9 97 B4 E4 B8 8D E8 B6 B3 2C 20 E6 98 AF E5 90 A6 E7 BB A7 E7 BB AD 3F|Lack of space, whether to continue?
+#E7 A9 BA E9 97 B4 E5 8D B3 E5 B0 86 E7 94 A8 E5 B0 BD|The space is about to run out
+#E7 A9 BA E9 97 B4 E5 B7 B2 E7 94 A8 E5 B0 BD|Space is exhausted
+#E7 AB 8B E5 8D B3 E5 BC 80 E5 90 AF|Open immediately
 E7 BB 93 E6 9D 9F|End
-E7 BB 95 38 E5 AD 97 E6 9D A5 E5 AE 8C E6 88 90 E6 A0 A1 E5 87 86|8 words to complete the calibration
-E7 BB A7 E7 BB AD|carry on
-E7 BB A7 E7 BB AD E5 B0 86 E4 BC 9A E8 A6 86 E7 9B 96 E9 83 A8 E5 88 86|Continue to cover the section
-E8 80 90 E5 8A 9B|endurance
-E8 87 AA E5 8A A8 E5 BC 80 E5 90 AF E5 8B BF E6 89 B0|Automatically turn on
-E8 AE BE E5 AE 9A E9 97 B9 E9 92 9F|Set the alarm clock
+#E7 BB 95 38 E5 AD 97 E6 9D A5 E5 AE 8C E6 88 90 E6 A0 A1 E5 87 86|8 words to complete the calibration
+#E7 BB A7 E7 BB AD|carry on
+#E7 BB A7 E7 BB AD E5 B0 86 E4 BC 9A E8 A6 86 E7 9B 96 E9 83 A8 E5 88 86|Continue to cover the section
+#E8 80 90 E5 8A 9B|endurance
+#E8 87 AA E5 8A A8 E5 BC 80 E5 90 AF E5 8B BF E6 89 B0|Automatically turn on
+#E8 AE BE E5 AE 9A E9 97 B9 E9 92 9F|Set the alarm clock
 E8 AE BE E7 BD AE E8 A1 A8 E7 9B 98|Set the dial
-E8 AE BE E7 BD AE E9 95 BF E6 8C 89 E5 BF AB E9 80 9F E5 90 AF E5 8A A8 E9 A1 B9|Set long press fast start item
-E8 AF B7 E4 BD A9 E6 88 B4 E6 89 8B E8 A1 A8|Please wear a watch
-E8 AF B7 E5 9C A8 41 50 50 E7 AB AF E6 9F A5 E7 9C 8B|Please see at the APP side
-E8 AF B7 E5 B0 BD E5 BF AB E5 85 85 E7 94 B5 E3 80 82|Please charge as soon as possible.
-E8 AF B7 E5 B0 BD E5 BF AB E5 90 8C E6 AD A5 E6 95 B0 E6 8D AE|Please synchronize data as soon as possible
-E8 AF B7 E6 89 93 E5 BC 80 E5 B0 8F E7 B1 B3 E8 BF 90 E5 8A A8 41 50 50|Please open millet movement APP
-E8 AF B7 E7 BB 99 E6 89 8B E8 A1 A8 E5 85 85 E7 94 B5|Please charge the watch
-E8 AF B7 E9 80 89 E6 8B A9 E5 8B BF E6 89 B0|Please choose not to interfere
-E8 AF B7 E9 95 BF E6 8C 89 E6 89 8B E8 A1 A8 E6 8C 89 E9 94 AE E6 9A 82 E5 81 9C|Please press the watch button to pause
-E8 B5 84 E6 BA 90 E5 BA 93 E5 8D 87 E7 BA A7 E4 B8 AD|Resource library upgrade
+#E8 AE BE E7 BD AE E9 95 BF E6 8C 89 E5 BF AB E9 80 9F E5 90 AF E5 8A A8 E9 A1 B9|Set long press fast start item
+#E8 AF B7 E4 BD A9 E6 88 B4 E6 89 8B E8 A1 A8|Please wear a watch
+#E8 AF B7 E5 9C A8 41 50 50 E7 AB AF E6 9F A5 E7 9C 8B|Please see at the APP side
+E8 AF B7 E5 B0 BD E5 BF AB E5 85 85 E7 94 B5 E3 80 82|Please charge ASAP
+E8 AF B7 E5 B0 BD E5 BF AB E5 90 8C E6 AD A5 E6 95 B0 E6 8D AE|Sync data ASAP
+#E8 AF B7 E6 89 93 E5 BC 80 E5 B0 8F E7 B1 B3 E8 BF 90 E5 8A A8 41 50 50|Please open millet movement APP
+#E8 AF B7 E7 BB 99 E6 89 8B E8 A1 A8 E5 85 85 E7 94 B5|Please charge the watch
+#E8 AF B7 E9 80 89 E6 8B A9 E5 8B BF E6 89 B0|Please choose not to interfere
+#E8 AF B7 E9 95 BF E6 8C 89 E6 89 8B E8 A1 A8 E6 8C 89 E9 94 AE E6 9A 82 E5 81 9C|Please press the watch button to pause
+E8 B5 84 E6 BA 90 E5 BA 93 E5 8D 87 E7 BA A7 E4 B8 AD|Resources upgrade
 E8 B5 B7 E6 9D A5 E6 B4 BB E5 8A A8 E4 B8 80 E4 BC 9A E5 90 A7|Get up for a while
 E8 B7 91 E6 AD A5|Run
-E8 B7 9D E7 A6 BB E5 A4 AA E7 9F AD E5 B0 86 E4 B8 8D E4 BC 9A E4 BF 9D E5 AD 98|Distance is too short will not be saved
-E8 B7 9D E7 A6 BB E6 8F 90 E9 86 92|Distance reminder
-E8 B7 B3 E8 BF 87|jump over
-E8 BF 90 E5 8A A8 E5 8E 86 E5 8F B2|Movement history
-E8 BF 98 E6 B2 A1 E6 9C 89 E8 BF 90 E5 8A A8 E8 AE B0 E5 BD 95 E5 93 A6|There is no movement record yet
-E8 BF 9E E6 8E A5 41 50 50 E6 9B B4 E6 96 B0 E6 90 9C E6 98 9F E8 BE 85 E5 8A A9|Connect APP update search star support
+#E8 B7 9D E7 A6 BB E5 A4 AA E7 9F AD E5 B0 86 E4 B8 8D E4 BC 9A E4 BF 9D E5 AD 98|Distance is too short will not be saved
+#E8 B7 9D E7 A6 BB E6 8F 90 E9 86 92|Distance reminder
+#E8 B7 B3 E8 BF 87|jump over
+#E8 BF 90 E5 8A A8 E5 8E 86 E5 8F B2|Movement history
+#E8 BF 98 E6 B2 A1 E6 9C 89 E8 BF 90 E5 8A A8 E8 AE B0 E5 BD 95 E5 93 A6|There is no movement record yet
+#E8 BF 9E E6 8E A5 41 50 50 E6 9B B4 E6 96 B0 E6 90 9C E6 98 9F E8 BE 85 E5 8A A9|Connect APP update search star support
 E9 80 9F E5 BA A6|speed
-E9 85 8D E9 80 9F E4 BD 8E E4 BA 8E E6 97 B6 E6 8F 90 E9 86 92|When the speed is lower than the reminder
-E9 85 8D E9 80 9F E6 8F 90 E9 86 92|Speed ​​reminders
-E9 85 8D E9 80 9F E8 BF 87 E6 85 A2|The speed is too slow
-E9 85 8D E9 80 9F|With speed
-E9 95 BF E6 8C 89 E6 8C 89 E9 94 AE|Long press the button
+#E9 85 8D E9 80 9F E4 BD 8E E4 BA 8E E6 97 B6 E6 8F 90 E9 86 92|When the speed is lower than the reminder
+#E9 85 8D E9 80 9F E6 8F 90 E9 86 92|Speed ​​reminders
+#E9 85 8D E9 80 9F E8 BF 87 E6 85 A2|The speed is too slow
+#E9 85 8D E9 80 9F|With speed
+#E9 95 BF E6 8C 89 E6 8C 89 E9 94 AE|Long press the button
 E9 AA 91 E8 A1 8C|Ride
-E6 89 8B E8 A1 A8 E5 8D 87 E7 BA A7 E5 A4 B1 E8 B4 A5|Watch upgrade failed
-E8 B5 84 E6 BA 90 E5 BA 93 E5 8D 87 E7 BA A7 E5 A4 B1 E8 B4 A5|Resource library failed to upgrade
-E5 9B BA E4 BB B6 E7 89 88 E6 9C AC|Firmware version
-E8 93 9D E7 89 99 E5 9C B0 E5 9D 80|Bluetooth address
-E7 A9 BA E9 97 B4 E4 B8 8D E8 B6 B3 2C 20 E6 98 AF E5 90 A6 E7 BB A7 E7 BB AD 3F|Lack of space, whether to continue?
-E7 BB A7 E7 BB AD E5 B0 86 E4 BC 9A E8 A6 86 E7 9B 96 E9 83 A8 E5 88 86|Continue to cover the section
+E6 89 8B E8 A1 A8 E5 8D 87 E7 BA A7 E5 A4 B1 E8 B4 A5|Watch upgrade KO
+#E8 B5 84 E6 BA 90 E5 BA 93 E5 8D 87 E7 BA A7 E5 A4 B1 E8 B4 A5|Resource library failed to upgrade
+E5 9B BA E4 BB B6 E7 89 88 E6 9C AC|Firmware ver
+E8 93 9D E7 89 99 E5 9C B0 E5 9D 80|Bluetoot add
+#E7 A9 BA E9 97 B4 E4 B8 8D E8 B6 B3 2C 20 E6 98 AF E5 90 A6 E7 BB A7 E7 BB AD 3F|Lack of space, whether to continue?
+#E7 BB A7 E7 BB AD E5 B0 86 E4 BC 9A E8 A6 86 E7 9B 96 E9 83 A8 E5 88 86|Continue to cover the section
 E6 9C AA E5 90 8C E6 AD A5 E7 9A 84 E8 BF 90 E5 8A A8 E6 95 B0 E6 8D AE|Unloaded motion data
-E6 97 A0 E6 B3 95 E7 BB A7 E7 BB AD E8 AE B0 E5 BD 95|Can not continue recording
-E9 85 8D E9 80 9F E8 BF 87 E6 85 A2|The speed is too slow
-E5 88 86|Minute
-E7 A7 92|second
-E6 AC A1 2F E5 88 86|Next / minute
-E6 AC A1|Times
-E4 B9 85 E5 9D 90 E8 B6 85 31 E5 B0 8F E6 97 B6|Sedentary over 1 hour
-E7 B4 AF E8 AE A1 E7 88 AC E5 8D 87|Accumulated climb
-E7 B4 AF E8 AE A1 E4 B8 8B E9 99 8D|Accumulated decline
+#E6 97 A0 E6 B3 95 E7 BB A7 E7 BB AD E8 AE B0 E5 BD 95|Can not continue recording
+#E9 85 8D E9 80 9F E8 BF 87 E6 85 A2|The speed is too slow
+E5 88 86|Min
+E7 A7 92|sec
+#E6 AC A1 2F E5 88 86|Next / minute
+#E6 AC A1|Times
+#E4 B9 85 E5 9D 90 E8 B6 85 31 E5 B0 8F E6 97 B6|Sedentary over 1 hour
+#E7 B4 AF E8 AE A1 E7 88 AC E5 8D 87|Accumulated climb
+#E7 B4 AF E8 AE A1 E4 B8 8B E9 99 8D|Accumulated decline
 E7 89 B9 E5 A4 A7 E6 9A B4 E9 9B A8|Heavy rain
-E6 9A B4 E9 9B A8|rainstorm
-E5 A4 A7 E6 9A B4 E9 9B A8|Heavy rain
-E9 9B A8|rain
-E5 86 BB E9 9B A8|Frozen rain
-E9 9B A8|rain
+#E6 9A B4 E9 9B A8|rainstorm
+#E5 A4 A7 E6 9A B4 E9 9B A8|Heavy rain
+#E9 9B A8|rain
+#E5 86 BB E9 9B A8|Frozen rain
+#E9 9B A8|rain
 E5 B0 8F E9 9B AA|Snow
 E4 B8 AD E5 88 B0 E5 A4 A7 E9 9B AA|In the snow
-E5 A4 A7 E9 9B AA|Heavy snow
-E5 B0 8F E5 88 B0 E4 B8 AD E9 9B AA|Small to snow
-E9 9B B7 E9 98 B5 E9 9B A8|Thunderstorms
+#E5 A4 A7 E9 9B AA|Heavy snow
+#E5 B0 8F E5 88 B0 E4 B8 AD E9 9B AA|Small to snow
+#E9 9B B7 E9 98 B5 E9 9B A8|Thunderstorms
 E9 98 B5 E9 9B A8|shower
-E5 A4 A7 E5 88 B0 E6 9A B4 E9 9B A8|Big rainstorm
-E4 B8 AD E9 9B AA|In the snow
-E5 A4 A7 E5 88 B0 E6 9A B4 E9 9B AA|Big to Blizzard
+#E5 A4 A7 E5 88 B0 E6 9A B4 E9 9B A8|Big rainstorm
+#E4 B8 AD E9 9B AA|In the snow
+#E5 A4 A7 E5 88 B0 E6 9A B4 E9 9B AA|Big to Blizzard
 E5 A4 A7 E6 9A B4 E9 9B A8 E5 88 B0 E7 89 B9 E5 A4 A7 E6 9A B4 E9 9B A8|Heavy rain to heavy rain
-E6 9A B4 E9 9B A8 E5 88 B0 E5 A4 A7 E6 9A B4 E9 9B A8|Heavy rain to heavy rain
-E4 B8 9C E5 8C 97|northeast
-E8 A5 BF E5 8C 97|northwest
-E5 8C 97|north
-E4 B8 9C E5 8D 97|southeast
-E8 A5 BF E5 8D 97|southwest
-E5 8D 97|south
-E4 B8 9C|east
-E8 A5 BF|Western
-E5 A4 9A E4 BA 91|partly cloudy
-E4 B8 A5 E9 87 8D E6 B1 A1 E6 9F 93|Serious pollution
-E9 87 8D E5 BA A6 E6 B1 A1 E6 9F 93|Severe pollution
-E4 B8 AD E5 BA A6 E6 B1 A1 E6 9F 93|Moderately polluted
-E8 BD BB E5 BA A6 E6 B1 A1 E6 9F 93|Mild contamination
-E6 B5 AE E5 B0 98|Floating dust
-E4 BC 98|excellent
+#E6 9A B4 E9 9B A8 E5 88 B0 E5 A4 A7 E6 9A B4 E9 9B A8|Heavy rain to heavy rain
+E4 B8 9C E5 8C 97|NE
+E8 A5 BF E5 8C 97|NW
+E5 8C 97|N
+E4 B8 9C E5 8D 97|SE
+E8 A5 BF E5 8D 97|SW
+E5 8D 97|S
+E4 B8 9C|E
+E8 A5 BF|W
+#E5 A4 9A E4 BA 91|partly cloudy
+#E4 B8 A5 E9 87 8D E6 B1 A1 E6 9F 93|Serious pollution
+#E9 87 8D E5 BA A6 E6 B1 A1 E6 9F 93|Severe pollution
+#E4 B8 AD E5 BA A6 E6 B1 A1 E6 9F 93|Moderately polluted
+#E8 BD BB E5 BA A6 E6 B1 A1 E6 9F 93|Mild contamination
+#E6 B5 AE E5 B0 98|Floating dust
+#E4 BC 98|excellent
 E6 89 AC E6 B2 99|Jansha
-E5 B0 8F E9 9B A8|Light rain
-E4 B8 AD E5 88 B0 E5 A4 A7 E9 9B A8|In the heavy rain
-E5 A4 A7 E9 9B A8|heavy rain
-E5 B0 8F E5 88 B0 E4 B8 AD E9 9B A8|Small to moderate rain
+#E5 B0 8F E9 9B A8|Light rain
+#E4 B8 AD E5 88 B0 E5 A4 A7 E9 9B A8|In the heavy rain
+#E5 A4 A7 E9 9B A8|heavy rain
+#E5 B0 8F E5 88 B0 E4 B8 AD E9 9B A8|Small to moderate rain
 E4 B8 AD E9 9B A8|Rain
-E6 9A B4 E9 9B AA|Blizzard
-E9 98 B5 E9 9B AA|Snow showers
+E6 9A B4 E9 9B AA|Blzrd
+#E9 98 B5 E9 9B AA|Snow showers
