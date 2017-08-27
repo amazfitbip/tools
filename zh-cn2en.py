@@ -14,34 +14,32 @@ translator = Translator()
 
 
 parser = argparse.ArgumentParser(description='Auto-translate and patch firmware files')
-parser.add_argument('-l', '--language', dest='language', help='en|it|de ...', required=True)
+parser.add_argument('-l', '--language', dest='language', default="en", #choices=["en","it"], 
+					help='l (default:%(default)s)', required=True)
 parser.add_argument('-o', '--output')
-parser.add_argument('-v', dest='verbose', action='store_true', help='patch firmware file')
+parser.add_argument('-f', '--fw', dest='firmwareFile', default="Mili_chaohu.fw", help='f (default:%(default)s)')
+parser.add_argument('-v', dest='verbose', action='store_true', help='verbose')
+parser.add_argument('-p', dest='patch', action='store_true', help='patch firmware file')
 parser.add_argument('-a', dest='analyze', action='store_true', help='analyze input file')
-#parser.set_defaults(language='en', baz='badger')
+#parser.add_argument("--type", default="toto", choices=["toto","titi"],
+#                              help = "type (default: %(default)s)")
+#parser.set_defaults(language='en', fw='Mili_chaohu.fw')
 args = parser.parse_args()
 
-print args.language
-#sys.exit(12)
+if os.path.isfile("zh-cn2"+args.language+".txt"):
+    fileName = "zh-cn2"+args.language+".txt"
+    targetFileName = "zh-cn2"+args.language+".txt"
+    tmpFileName = fileName.replace(".txt",".tmp")
+    defaultlang = "it"
+else:
+    fileName = "zh-cn2en.txt"
+    targetFileName = "zh-cn2"+args.language+".txt"
+    tmpFileName = fileName.replace(".txt",".tmp")
+    defaultlang = "en"
 
-##TODO
-## the pattern must be ordered from the longer to the shorter 
-## each pattern must be searched into the binary + 00 and replaced with the new string + 00 
-
-#https://wiki.python.org/moin/HowTo/Sorting
-#>>> student_tuples = [
-#        ('john', 'A', 15),
-#        ('jane', 'B', 12),
-#        ('dave', 'B', 10),
-#]
-#>>> sorted(student_tuples, key=lambda student: student[2])   # sort by age
-#[('dave', 'B', 10), ('jane', 'B', 12), ('john', 'A', 15)]
-
-
-fileName = "zh-cn2en.txt"
-
+print targetFileName
 translation_tuples = []
-out = open("zh-cn2en.tmp", mode='w')
+out = open(tmpFileName, mode='w')
 with open(fileName, mode='r') as file:
     for l in file:
 	line_header=""
@@ -50,30 +48,34 @@ with open(fileName, mode='r') as file:
 	string_addrs=line.split("|")[1]
 	string_hex=" ".join(c for c in line.split("|")[2].split())
 	string_cn="".join(c for c in string_hex.split()).decode("hex")
-	if len(line.split("|")) == 4:
-	    string_en=line.split("|")[3]
+	if len(line.split("|")) == 4 and defaultlang == args.language:
+	    string_translated=line.split("|")[3]
 	    #check here if translation is longer then the original hex
 	else:
-	    string_en=translator.translate(string_cn, dest='en').text
+	    string_translated=translator.translate(string_cn, dest=args.language).text
 
 	# update translation file
-	if len(string_en) > len(string_cn):
+	if len(string_translated) > len(string_cn):
 	    line_header = "#"
 
-	translation_tuple = tuple( [string_hex, string_en,string_addrs])
-	if len(string_en) <= len(string_cn) and translation_tuple not in translation_tuples:
+	translation_tuple = tuple( [string_hex, string_translated,string_addrs])
+	if len(string_translated) <= len(string_cn) and translation_tuple not in translation_tuples:
 	    translation_tuples.append(translation_tuple)
 
-	out.write("%s%s|%s|%s|%s\n" % (line_header, string_fw,string_addrs,string_hex, string_en))
+	out.write("%s%s|%s|%s|%s\n" % (line_header, string_fw,string_addrs,string_hex, string_translated))
 
-	print "%s%s => %s(%d) = %s(%d)" % (line_header, string_hex,string_cn,len(string_cn),string_en,len(string_en))
+	print "%s%s => %s(%d) = %s(%d)" % (line_header, string_hex,string_cn,len(string_cn),string_translated,len(string_translated))
 
-os.rename('zh-cn2en.tmp', 'zh-cn2en.txt')
+os.rename(tmpFileName, targetFileName)
 
 
 translation_tuples_s = sorted(translation_tuples, key=lambda string_cn: len(string_cn[0]), reverse=True)
 
-if args.verbose:
+if args.patch:
+    
+    if not args.firmwareFile:
+	print "ERROR: missing --fw <firmwarefile>"
+	sys.exit(1)
 
     firmwareFile = "Mili_chaohu.fw"
 
@@ -104,12 +106,7 @@ if args.verbose:
 
 	    #avoid wrong substitution
 	    if ord(s_ar[ix+len(find_str.decode("hex"))]) != 0:
-		#print "ix",ix,  len(find_str.decode("hex"))
-		#print s_ar[ix:ix+len(find_str.decode("hex"))+1]
-		#print len(find_str.decode("hex")),"%x" % ord(s_ar[ix+len(find_str.decode("hex"))]) 
-		#print('0x%s %s (%s) ERROR at %x (%d/%d)%s' % (find_str, find_str.decode("hex"), translation_tuples_s[index][1], ix, found_cnt, 0,""))
     		ix += len(find_str.decode("hex")) # +2 because len('ll') == 2
-    		#ix = s.find(find_str.decode("hex"), ix)
 		continue
 
 	    found_cnt+=1
@@ -147,12 +144,7 @@ if args.verbose:
 	#if index == 2:
 	#    break
 	    
-    with open(firmwareFile.replace(".fw","_EN.fw"), "wb") as output_file:
+    with open(firmwareFile.replace(".fw","_"+ args.language + ".fw"), "wb") as output_file:
         output_file.write(s)
-	sys.exit(12)
+	sys.exit(0)
 
-	#url =  "%".join(c for c in line.split())
-	#print "%".join("{:02x}".format(ord(c)) c for c in line)
-	#print "%".join("{:02x}".format(cord(c)) for c in line.split())
-	#print gurl+url
-	#os.system("curl -A 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:36.0) Gecko/20100101 Firefox/36.0' "+gurl+url)
