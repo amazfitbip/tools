@@ -15,7 +15,8 @@ translator = Translator()
 
 parser = argparse.ArgumentParser(description='Auto-translate and patch firmware files')
 parser.add_argument('-l', '--language', dest='language', default="en", #choices=["en","it"], 
-					help='l (default:%(default)s)', required=True)
+					help='l (default:%(default)s)' #, required=True
+		    )
 parser.add_argument('-o', '--output')
 parser.add_argument('-f', '--fw', dest='firmwareFile', default="Mili_chaohu.fw", help='f (default:%(default)s)')
 parser.add_argument('-v', dest='verbose', action='store_true', help='verbose')
@@ -30,14 +31,14 @@ if os.path.isfile("zh-cn2"+args.language+".txt"):
     fileName = "zh-cn2"+args.language+".txt"
     targetFileName = "zh-cn2"+args.language+".txt"
     tmpFileName = fileName.replace(".txt",".tmp")
-    defaultlang = "it"
+    defaultlang = args.language
 else:
     fileName = "zh-cn2en.txt"
     targetFileName = "zh-cn2"+args.language+".txt"
     tmpFileName = fileName.replace(".txt",".tmp")
     defaultlang = "en"
 
-print targetFileName
+
 translation_tuples = []
 out = open(tmpFileName, mode='w')
 with open(fileName, mode='r') as file:
@@ -48,8 +49,10 @@ with open(fileName, mode='r') as file:
 	string_addrs=line.split("|")[1]
 	string_hex=" ".join(c for c in line.split("|")[2].split())
 	string_cn="".join(c for c in string_hex.split()).decode("hex")
-	if len(line.split("|")) == 4 and defaultlang == args.language:
-	    string_translated=line.split("|")[3]
+
+	#cleanup translation when switching to other language
+	if len(line.split("|")) == 5 and defaultlang == args.language:
+	    string_translated=line.split("|")[4]
 	    #check here if translation is longer then the original hex
 	else:
 	    string_translated=translator.translate(string_cn, dest=args.language).text
@@ -62,7 +65,7 @@ with open(fileName, mode='r') as file:
 	if len(string_translated) <= len(string_cn) and translation_tuple not in translation_tuples:
 	    translation_tuples.append(translation_tuple)
 
-	out.write("%s%s|%s|%s|%s\n" % (line_header, string_fw,string_addrs,string_hex, string_translated))
+	out.write("%s%s|%s|%s|%s|%s\n" % (line_header, string_fw,string_addrs,string_hex, string_cn, string_translated))
 
 	print "%s%s => %s(%d) = %s(%d)" % (line_header, string_hex,string_cn,len(string_cn),string_translated,len(string_translated))
 
