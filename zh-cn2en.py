@@ -71,7 +71,7 @@ with open(fileName, mode='r') as file:
 
 os.rename(tmpFileName, targetFileName)
 
-
+#sort the translation array to be sure to patch the short string later as they can be included in longer one
 translation_tuples_s = sorted(translation_tuples, key=lambda string_cn: len(string_cn[0]), reverse=True)
 
 if args.patch:
@@ -105,6 +105,8 @@ if args.patch:
     	    ix = s.find(find_str.decode("hex"), ix)
 
     	    if ix == -1:
+		if found_cnt == 0:
+		    print('0x%s %s (%s) NOT FOUND :-(' % (find_str_user_friendly, find_str.decode("hex"), translation_tuples_s[index][1]))
     	        break
 
 	    #avoid wrong substitution
@@ -121,6 +123,7 @@ if args.patch:
     
     	    for r in range(len(find_str.decode("hex"))):
 	        if r < len(translation_tuples_s[index][1]):
+		    #print('0x%s %s (%s) found at %x (%d/%d)%s' % (find_str_user_friendly, find_str.decode("hex"), translation_tuples_s[index][1], ix+r, found_cnt, len_addrs,warning))
 	    	    s_ar[ix+r] = (translation_tuples_s[index][1])[r]
 	        else:
 		    s_ar[ix+r] = chr(0)

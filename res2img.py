@@ -22,6 +22,7 @@ if len(sys.argv) == 2:
 #    byte_string, n1, n4 = struct.unpack('4sbI', fobj.read(12)) 
 #https://docs.python.org/3/library/struct.html#format-strings
 
+os.mkdir("_"+fileName)
 
 with open(fileName, mode='rb') as file: # b is important -> binary
     fileContent = file.read()
@@ -84,7 +85,7 @@ with open(fileName, mode='rb') as file: # b is important -> binary
 
 	raw_image_width = ord(fileContent[start+8:start+9])
 	#filename = "%03d_%03d_%s" % (index, raw_image_width, ver)
-	filename = "%03d_%02x_%02x_%s" % (index, unknown1, unknown2, ver)
+	filename = "_"+fileName +  os.path.sep + "%03d_%02x_%02x_%s" % (index, unknown1, unknown2, ver)
 	palette_len = ord(fileContent[start+12:start+13])
 	#print DEBUG: palette_len=%d" % palette_len
 
