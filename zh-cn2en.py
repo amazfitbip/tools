@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-import os,sys,argparse
+import os,sys,argparse,re
 reload(sys)  
 sys.setdefaultencoding('utf8')
 
@@ -75,15 +75,19 @@ os.rename(tmpFileName, targetFileName)
 translation_tuples_s = sorted(translation_tuples, key=lambda string_cn: len(string_cn[0]), reverse=True)
 
 if args.patch:
-    
+
+    version = "unknown"    
     if not args.firmwareFile:
 	print "ERROR: missing --fw <firmwarefile>"
 	sys.exit(1)
 
-    firmwareFile = "Mili_chaohu.fw"
-
-    with open(firmwareFile, "rb") as input_file:
+    with open(args.firmwareFile, "rb") as input_file:
         s = input_file.read()
+
+    m = re.search('@([0-9].[0-9].[0-9].[0-9]+)', s)
+    if m:
+	version =  m.group(1)
+	print "Detected firmare version %s" % version
 
     for index in range(len(translation_tuples_s)):
 	#print translation_tuples_s[index]
@@ -110,7 +114,8 @@ if args.patch:
     	        break
 
 	    #avoid wrong substitution
-	    if ord(s_ar[ix+len(find_str.decode("hex"))]) != 0:
+	    if ord(s_ar[ix+len(find_str.decode("hex"))]) != 0 or (version == "0.0.8.74" and ix < int("00066050",16)):
+		print('0x%s %s (%s) SKIPPED (unsafe) at %x :-|' % (find_str_user_friendly, find_str.decode("hex"), translation_tuples_s[index][1], ix))
     		ix += len(find_str.decode("hex")) # +2 because len('ll') == 2
 		continue
 
@@ -150,7 +155,7 @@ if args.patch:
 	#if index == 2:
 	#    break
 	    
-    with open(firmwareFile.replace(".fw","_"+ args.language + ".fw"), "wb") as output_file:
+    with open("Mili_chaohu_" +version + "_"+ args.language + ".fw", "wb") as output_file:
         output_file.write(s)
 	sys.exit(0)
 
