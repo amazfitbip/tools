@@ -51,7 +51,10 @@ with open(inputTxtFileName, mode='r') as file:
 	else:
 	    string_hex=" ".join(c for c in line.split("|")[2].split())
 	    string_cn="".join(c for c in string_hex.split()).decode("hex")
-	string_tmp_en=line.split("|")[4]
+	if len(line.split("|")) == 5:
+	    string_tmp_en=line.split("|")[4]
+	else:
+	    string_tmp_en=None
 	for_translation.append((string_fw, string_addrs, string_hex, string_cn, string_tmp_en))
 
 if args.auto_translate:
@@ -61,7 +64,7 @@ if args.auto_translate:
 
 		string_fw, string_addrs, string_hex, string_cn, _ = item
 
-		if len(line.split("|")) == 5 and args.input == args.output:
+		if _ and args.input == args.output:
 	    		string_translated=_
 		else:
 	    		string_translated=translator.translate(string_cn, dest=args.language).text
