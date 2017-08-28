@@ -58,9 +58,13 @@ if args.auto_translate:
 	out_lines = []
 	for item in for_translation:
 		line_header=""
-		#cleanup translation when switching to other language
+
 		string_fw, string_addrs, string_hex, string_cn, _ = item
-		string_translated=translator.translate(string_cn, dest=args.language).text
+
+		if len(line.split("|")) == 5 and args.input == args.output:
+	    		string_translated=_
+		else:
+	    		string_translated=translator.translate(string_cn, dest=args.language).text
 
 		# update translation file
 		if len(string_translated) > len(string_cn):
