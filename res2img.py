@@ -36,16 +36,18 @@ with open(fileName, mode='rb') as file: # b is important -> binary
     print "file is a Haumi resource file"
     print "version??? %d" % version
 
-    max_rsrc = ord(fileContent[0x10:0x10+1]) + (ord(fileContent[0x11:0x11+1])<<0x8)
+    buf = [ ord(elem) for elem in fileContent[0x10:0x10+4]]
+    max_rsrc = (buf[0] <<0) + (buf[1] <<8) + (buf[2] << 16) + (buf[3] <<24)
 
     print "number of resources: %d" % max_rsrc
 
     for index in range(max_rsrc):
 	ptr = (4 * index + 0x14)
 	buf = [ ord(elem) for elem in fileContent[ptr:ptr+4]]
-	addr = (buf[0] <<0x0) + (buf[1] <<0x8) + (buf[2] << 0x16) + (buf[3] <<0x32)
+	addr = (buf[0] <<0) + (buf[1] <<8) + (buf[2] << 16) + (buf[3] <<24)
+	print buf[2]
 	offs = 4* max_rsrc + 0x14
-        print "resource %d | ptr on header :%x | pos on file: %x" % ( index, ptr, offs + addr  )
+        print "resource %d | ptr on header: %x | addr: %x | pos on file: %x" % ( index, ptr, addr, offs + addr  )
 
     offset=16 #boh
     offset=19 +4
