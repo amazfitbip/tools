@@ -17,59 +17,101 @@ parser = argparse.ArgumentParser(description='Auto-translate and patch firmware 
 parser.add_argument('-l', '--language', dest='language', default="en", #choices=["en","it"], 
 					help='l (default:%(default)s)' #, required=True
 		    )
-parser.add_argument('-o', '--output')
+parser.add_argument('-o', '--output', type=str, dest='output', help='output name of translation file, default zh-cn2en.txt', default='zh-cn2en.txt')
+parser.add_argument('-i', '--input', type=str, dest='input', help='input name of translation file, default zh-cn2en.txt', default='zh-cn2en.txt')
+parser.add_argument('-t', '--auto_translate', action='store_true',dest='auto_translate', help='auto translate input file')
+parser.add_argument('-m', '--manual_translate', action='store_true',dest='manual_translate', help='manually translate input file')
 parser.add_argument('-f', '--fw', dest='firmwareFile', default="Mili_chaohu.fw", help='f (default:%(default)s)')
 parser.add_argument('-v', dest='verbose', action='store_true', help='verbose')
-parser.add_argument('-p', dest='patch', action='store_true', help='patch firmware file')
+parser.add_argument('-p', dest='patch', action='store_true', help='patch firmware file. You can patch firmware with auto translated text (-t), or with manually translated text (-m), or with input file only (with translation, which you manually made before)')
 parser.add_argument('-a', dest='analyze', action='store_true', help='analyze input file')
 #parser.add_argument("--type", default="toto", choices=["toto","titi"],
 #                              help = "type (default: %(default)s)")
 #parser.set_defaults(language='en', fw='Mili_chaohu.fw')
 args = parser.parse_args()
 
-if os.path.isfile("zh-cn2"+args.language+".txt"):
-    fileName = "zh-cn2"+args.language+".txt"
-    targetFileName = "zh-cn2"+args.language+".txt"
-    tmpFileName = fileName.replace(".txt",".tmp")
-    defaultlang = args.language
-else:
-    fileName = "zh-cn2en.txt"
-    targetFileName = "zh-cn2"+args.language+".txt"
-    tmpFileName = fileName.replace(".txt",".tmp")
-    defaultlang = "en"
+if args.auto_translate and args.manual_translate:
+	print 'ERROR: Invalid parameter combination (-t -m)'
+	print parser.print_help()
+	sys.exit(1)
 
+inputTxtFileName = args.input
+outputTxtFileName = args.output
 
 translation_tuples = []
-out = open(tmpFileName, mode='w')
-with open(fileName, mode='r') as file:
+for_translation = []
+with open(inputTxtFileName, mode='r') as file:
     for l in file:
-	line_header=""
 	line=l.lstrip('#').rstrip('\n')
 	string_fw=line.split("|")[0]
 	string_addrs=line.split("|")[1]
 	string_hex=" ".join(c for c in line.split("|")[2].split())
 	string_cn="".join(c for c in string_hex.split()).decode("hex")
+	string_tmp_en=line.split("|")[4]
+	for_translation.append((string_fw, string_addrs, string_hex, string_cn, string_tmp_en))
 
-	#cleanup translation when switching to other language
-	if len(line.split("|")) == 5 and defaultlang == args.language:
-	    string_translated=line.split("|")[4]
-	    #check here if translation is longer then the original hex
-	else:
-	    string_translated=translator.translate(string_cn, dest=args.language).text
+if args.auto_translate:
+	out_lines = []
+	for item in for_translation:
+		line_header=""
+		#cleanup translation when switching to other language
+		string_fw, string_addrs, string_hex, string_cn, _ = item
+		string_translated=translator.translate(string_cn, dest=args.language).text
 
-	# update translation file
-	if len(string_translated) > len(string_cn):
-	    line_header = "#"
+		# update translation file
+		if len(string_translated) > len(string_cn):
+			line_header = "#"
 
-	translation_tuple = tuple( [string_hex, string_translated,string_addrs])
-	if len(string_translated) <= len(string_cn) and translation_tuple not in translation_tuples:
-	    translation_tuples.append(translation_tuple)
+		translation_tuple = tuple( [string_hex, string_translated,string_addrs])
+		if len(string_translated) <= len(string_cn) and translation_tuple not in translation_tuples:
+			translation_tuples.append(translation_tuple)
 
-	out.write("%s%s|%s|%s|%s|%s\n" % (line_header, string_fw,string_addrs,string_hex, string_cn, string_translated))
+		out_lines.append("%s%s|%s|%s|%s|%s\n" % (line_header, string_fw,string_addrs,string_hex, string_cn, string_translated))
 
-	print "%s%s => %s(%d) = %s(%d)" % (line_header, string_hex,string_cn,len(string_cn),string_translated,len(string_translated))
+		print "%s%s => %s(%d) = %s(%d)" % (line_header, string_hex,string_cn,len(string_cn),string_translated,len(string_translated))
 
-os.rename(tmpFileName, targetFileName)
+	with open(outputTxtFileName, 'w') as file:
+		for line in out_lines:
+			file.write(line)
+
+elif args.manual_translate:
+
+	print "\n\n\n==== Translate strings (lenght must be equal or lower than CN lenght) ====\nKeep translation from file - Press Enter only\n\n\n"
+	cnt = 1
+	man_translated = []
+	for item in for_translation:
+		string_fw, string_addrs, string_hex, string_cn, string_other = item
+		while True:
+			print '%d/%d: CN: %s (%d), From file: %s (%d): ' % (cnt, len(for_translation), string_cn, len(string_cn), string_other, len(string_other))
+			print '%s%s' % (''.join([' ']*(len(item[3])-1)), 'v - STOP HERE (max len - %s)' % len(string_cn))
+			translation = raw_input()
+			if len(translation) > len(string_cn):
+				print "Translation lenght is greather than CN string (%d) > (%d). Try it again: " % (len(translation), len(string_cn))
+			elif len(translation) == 0:
+				man_translated.append(item)
+				break
+			else:
+				man_translated.append((item[0:-1] + (translation,)))
+				break
+		cnt += 1
+	# after tranlation, we save the file
+	with open(outputTxtFileName, 'w') as file:
+		translation_tuples_s = line
+		for item in man_translated:
+			line = "%s|%s|%s|%s|%s\n" % item
+			file.write("%s|%s|%s|%s|%s\n" % item)
+			# rewrite translation tuples
+			translation_tuples.append((item[2], item[4], item[1]))
+		print "Translation saved to '%s'. You can use it for patch firmware (-p -i %s)" % (outputTxtFileName, outputTxtFileName)
+
+else:
+	for item in for_translation:
+                string_fw, string_addrs, string_hex, string_cn, string_other = item
+
+                translation_tuple = tuple( [string_hex, string_other,string_addrs])
+                if len(string_other) <= len(string_cn) and translation_tuple not in translation_tuples:
+                        translation_tuples.append(translation_tuple)
+
 
 #sort the translation array to be sure to patch the short string later as they can be included in longer one
 translation_tuples_s = sorted(translation_tuples, key=lambda string_cn: len(string_cn[0]), reverse=True)
