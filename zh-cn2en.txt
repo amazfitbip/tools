@@ -20,7 +20,7 @@
 0.0.8.32|1|E4 BA AE E5 BA A6 E8 B0 83 E8 8A 82|亮度调节|Dimming
 #0.0.8.32|1|E4 BB 8A E5 A4 A9|今天|Nowadays
 #0.0.8.32|1|E4 BC 98|优|excellent
-#0.0.8.32|1|E4 BD A9 E6 88 B4 E6 89 8B E8 A1 A8 E5 85 A5 E7 9D A1 E5 90 8E|佩戴手表入睡后|Wear a watch after falling asleep
+0.0.8.32|1|E4 BD A9 E6 88 B4 E6 89 8B E8 A1 A8 E5 85 A5 E7 9D A1 E5 90 8E|佩戴手表入睡后|Wear while sleeping
 0.0.8.32|1|E5 81 9C E6 AD A2|停止|stop
 0.0.8.32|1|E5 81 A5 E8 B5 B0|健走|Walk
 0.0.8.32|1|E5 85 85 E7 94 B5 E4 B8 AD|充电中|charging
@@ -52,10 +52,9 @@
 0.0.8.32|1|E5 A4 A7 E6 9A B4 E9 9B A8|大暴雨|+ Rain
 #0.0.8.32|1|E5 A4 A7 E9 9B A8|大雨|heavy rain
 #0.0.8.32|1|E5 A4 A7 E9 9B AA|大雪|Heavy snow
-#0.0.8.32|1|E5 AE 9A E4 BD 8D E6 88 90 E5 8A 9F E4 B9 8B E5 89 8D|定位成功之前|Before positioning is successful
-#0.0.8.32|1|E5 AE 9A E4 BD 8D E6 88 90 E5 8A 9F|定位成功|Location is successful
+#0.0.8.32|1|E5 AE 9A E4 BD 8D E6 88 90 E5 8A 9F E4 B9 8B E5 89 8D|定位成功之前|Before posiioning ok
+0.0.8.32|1|E5 AE 9A E4 BD 8D E6 88 90 E5 8A 9F|定位成功|Location OK
 0.0.8.32|1|E5 AE A4 E5 86 85 E8 B7 91|室内跑|Run in
-#0.0.8.32|1|E5 B0 86 E6 97 A0 E6 B3 95 E8 AE B0 E5 BD 95 E8 BF 90 E5 8A A8 E8 BD A8 E8 BF B9|将无法记录运动轨迹|The trajectory can not be recorded
 0.0.8.32|1|E5 B0 8F E5 88 B0 E4 B8 AD E9 9B A8|小到中雨|Small 2 rain
 #0.0.8.32|1|E5 B0 8F E5 88 B0 E4 B8 AD E9 9B AA|小到中雪|Small to snow
 0.0.8.32|1|E5 B0 8F E9 9B A8|小雨|- Rain
@@ -66,11 +65,9 @@
 0.0.8.32|1|E5 B7 B2 E6 9A 82 E5 81 9C|已暂停|Paused
 0.0.8.32|1|E5 BC 80 E5 90 AF E6 96 B9 E5 BC 8F|开启方式|Open mode
 0.0.8.32|1|E5 BC 80 E5 A7 8B|开始|Start
-0.0.8.32|46674|E5 BC 80 E9 98 94 E5 9C BA E5 9C B0 E4 BF A1 E5 8F B7 E6 9B B4 E4 BD B3|开阔场地信号更佳|Open field signal better
 #0.0.8.32|1|E5 BD 93 E5 89 8D E5 A4 A9 E6 B0 94 E8 8E B7 E5 8F 96 E5 A4 B1 E8 B4 A5|当前天气获取失败|The current weather failed
 #0.0.8.32|1|E5 BE AE E4 BF A1 E7 BA A2 E5 8C 85|微信红包|Micro letter red envelope
 #0.0.8.32|1|E5 BF 83 E7 8E 87 E6 8F 90 E9 86 92|心率提醒|Heart rate rem.
-#0.0.8.32|1|E5 BF 83 E7 8E 87 E6 B5 8B E9 87 8F E6 9B B4 E5 87 86 E7 A1 AE|心率测量更准确|Heart rate is more accurate
 #0.0.8.32|1|E5 BF 83 E7 8E 87 E8 BF 87 E9 AB 98|心率过高|Heart rate too high
 #0.0.8.32|1|E5 BF 83 E7 8E 87|心率|Heart rate
 #0.0.8.32|1|E5 BF 83 E8 82 BA|心肺|Heart and lungs
@@ -78,7 +75,6 @@
 0.0.8.32|1|E6 88 B4 E7 B4 A7 E6 89 8B E8 A1 A8|戴紧手表|Wear a watch
 #0.0.8.32|1|E6 88 B7 E5 A4 96 E8 B7 91|户外跑|Run outdoors
 0.0.8.32|1|E6 89 8B E6 9C BA E9 97 B9 E9 92 9F E5 93 8D E4 BA 86|手机闹钟响了|The phone rings
-#0.0.8.32|1|E6 89 8B E8 A1 A8 E5 89 A9 E4 BD 99 E7 94 B5 E9 87 8F|手表剩余电量|Watch the remaining power
 0.0.8.32|1|E6 89 8B E8 A1 A8 E5 8D 87 E7 BA A7 E4 B8 AD|手表升级中|Watch upgrade
 0.0.8.32|1|E6 89 8B E8 A1 A8 E5 8D 87 E7 BA A7 E5 A4 B1 E8 B4 A5|手表升级失败|Watch upgrade KO
 0.0.8.32|1|E6 89 8B E8 A1 A8 E5 8D 87 E7 BA A7 E6 88 90 E5 8A 9F|手表升级成功|Watch upgrade OK
@@ -131,7 +127,6 @@
 0.0.8.32|1|E7 A1 AE E5 AE 9A E7 BB 93 E6 9D 9F E7 A7 92 E8 A1 A8 3F|确定结束秒表?|Ok end stopwatch
 0.0.8.32|00024424|E7 A7 92|秒|sec
 0.0.8.32|1|E7 A8 8D E5 90 8E E6 8F 90 E9 86 92|稍后提醒|Remind later
-#0.0.8.32|1|E7 A9 BA E9 97 B4 E4 B8 8D E8 B6 B3 2C 20 E6 98 AF E5 90 A6 E7 BB A7 E7 BB AD 3F|空间不足, 是否继续?|Lack of space, whether to continue?
 0.0.8.32|1|E7 A9 BA E9 97 B4 E5 8D B3 E5 B0 86 E7 94 A8 E5 B0 BD|空间即将用尽|Out of space
 #0.0.8.32|1|E7 A9 BA E9 97 B4 E5 B7 B2 E7 94 A8 E5 B0 BD|空间已用尽|Space is exhausted
 0.0.8.32|1|E7 AB 8B E5 8D B3 E5 BC 80 E5 90 AF|立即开启|Open now
@@ -143,14 +138,12 @@
 0.0.8.32|1|E7 BB A7 E7 BB AD|继续|Resume
 0.0.8.32|47cd0|E7 BB A7 E7 BB AD E5 B0 86 E4 BC 9A E8 A6 86 E7 9B 96 E9 83 A8 E5 88 86|继续将会覆盖部分|Cont. to cover the sect.
 #0.0.8.32|1|E8 80 90 E5 8A 9B|耐力|endurance
-#0.0.8.32|1|E8 87 AA E5 8A A8 E5 BC 80 E5 90 AF E5 8B BF E6 89 B0|自动开启勿扰|Automatically turn on
 0.0.8.32|1|E8 93 9D E7 89 99 E5 9C B0 E5 9D 80|蓝牙地址|BT address
 #0.0.8.32|1|E8 A5 BF E5 8C 97|西北|northwest
 #0.0.8.32|1|E8 A5 BF E5 8D 97|西南|southwest
 #0.0.8.32|1|E8 A5 BF|西|Western
 #0.0.8.32|1|E8 AE BE E5 AE 9A E9 97 B9 E9 92 9F|设定闹钟|Set the alarm clock
 0.0.8.32|1|E8 AE BE E7 BD AE E8 A1 A8 E7 9B 98|设置表盘|Set the face
-0.0.8.32|1|E8 AE BE E7 BD AE E9 95 BF E6 8C 89 E5 BF AB E9 80 9F E5 90 AF E5 8A A8 E9 A1 B9|设置长按快速启动项|Set long press fast start
 0.0.8.32|1|E8 AF B7 E4 BD A9 E6 88 B4 E6 89 8B E8 A1 A8|请佩戴手表|Wear the watch
 #0.0.8.32|1|E8 AF B7 E5 9C A8 41 50 50 E7 AB AF E6 9F A5 E7 9C 8B|请在APP端查看|See at the APP side
 0.0.8.32|1|E8 AF B7 E5 B0 BD E5 BF AB E5 85 85 E7 94 B5 E3 80 82|请尽快充电。|Please charge ASAP
@@ -172,7 +165,6 @@
 0.0.8.32|000453A4,00045570|E9 80 9F E5 BA A6|速度|speed
 #0.0.8.32|1|E9 85 8D E9 80 9F E4 BD 8E E4 BA 8E E6 97 B6 E6 8F 90 E9 86 92|配速低于时提醒|When the speed is lower than the reminder
 0.0.8.32|1|E9 85 8D E9 80 9F E6 8F 90 E9 86 92|配速提醒|Speed rem.
-#0.0.8.32|1|E9 85 8D E9 80 9F E8 BF 87 E6 85 A2|配速过慢|Speed too slow
 #0.0.8.32|1|E9 85 8D E9 80 9F|配速|With speed
 #0.0.8.32|1|E9 87 8D E5 BA A6 E6 B1 A1 E6 9F 93|重度污染|Severe pollution
 0.0.8.32|1|E9 95 BF E6 8C 89 E6 8C 89 E9 94 AE|长按按键|Long press
@@ -181,6 +173,7 @@
 0.0.8.32|1|E9 9B A8|雨|ra
 0.0.8.32|1|E9 9B B7 E9 98 B5 E9 9B A8|雷阵雨|Th.Storm
 0.0.8.32|0002D040,000387F0,000453B4|E9 AA 91 E8 A1 8C|骑行|Ride
+0.0.8.74|1|E9 A8 8E E8 A1 8C|騎行|Ride
 0.0.8.32|00064FC0|E6 9A B4 E9 9B A8 E5 88 B0 E5 A4 A7 E6 9A B4 E9 9B A8|暴雨到大暴雨|+ rain to + rain
 0.0.8.32|00064FD4|E5 A4 A7 E6 9A B4 E9 9B A8 E5 88 B0 E5 A4 A7 E6 9A B4 E9 9B A8|大暴雨到大暴雨|Big + rain to + rain
 0.0.8.32|0006508C|E9 9B A8 E5 A4 B9 E9 9B AA|雨夹雪|Sleet
@@ -193,7 +186,7 @@
 0.0.8.32|1|E6 94 B6 E5 88 B0 E6 89 8B E6 9C BA E7 BB 91 E5 AE 9A E8 AF B7 E6 B1 82|收到手机绑定请求|Phone binding request
 0.0.8.74|1|E6 94 B6 E5 88 B0 E6 89 8B E6 A9 9F E7 B6 81 E5 AE 9A E8 AB 8B E6 B1 82|收到手機綁定請求|Phone binding request
 0.0.8.74|1|E7 9B AE E5 89 8D E5 89 A9 E9 A4 98 E9 9B BB E9 87 8F|目前剩餘電量|Remaining capacity
-0.0.8.74|1|E8 87 AA E5 8A A8 E5 BC 80 E5 90 AF E5 8B BF E6 89 B0|自动开启勿扰|Automatic turn on
+0.0.8.32|1|E8 87 AA E5 8A A8 E5 BC 80 E5 90 AF E5 8B BF E6 89 B0|自动开启勿扰|Automatic turn on
 0.0.8.74|1|E7 A2 BA E5 AE 9A E9 97 9C E9 96 89 E6 89 8B E9 8C B6|確定關閉手錶|Close the watch!
 0.0.8.74|1|E6 A0 A1 E6 BA 96 E8 B7 91 E6 AD A5 E8 B7 9D E9 9B A2|校準跑步距離|Calib running dist
 0.0.8.32|1|E6 A0 A1 E5 87 86 E8 B7 91 E6 AD A5 E8 B7 9D E7 A6 BB|校准跑步距离|Calib running dist
@@ -214,7 +207,24 @@
 0.0.8.74|1|E8 AB 8B E5 84 98 E5 BF AB E5 85 85 E9 9B BB E3 80 82|請儘快充電。|Please charge ASAP
 0.0.8.74|1|E5 85 85 E9 9B BB E4 B8 AD|充電中|charging
 0.0.8.74|1|E6 99 BA E8 83 BD E5 BC 80 E5 90 AF|智能开启|Smart open
-#0.0.8.74|1|E7 A2 BA E5 AE 9A E7 B5 90 E6 9D 9F E7 A2 BC E9 8C B6 3F|確定結束碼錶?|Determine end code table?
-0.0.8.74|1|E5 B0 87 E7 84 A1 E6 B3 95 E8 A8 98 E9 8C 84 E9 81 8B E5 8B 95 E8 BB 8C E8 B7 A1|將無法記錄運動軌跡|Can't record the track
-#0.0.8.74|1|E5 BF 83 E7 8E 87 E6 B5 8B E9 87 8F E6 9B B4 E5 87 86 E7 A1 AE|心率测量更准确|Heart rate is more accurate
-0.0.8.74|1|E6 89 8B E8 A1 A8 E5 89 A9 E4 BD 99 E7 94 B5 E9 87 8F
+0.0.8.74|1|E7 A2 BA E5 AE 9A E7 B5 90 E6 9D 9F E7 A2 BC E9 8C B6 3F|確定結束碼錶?|Ok to end code tbl?
+0.0.8.32|1|E6 89 8B E8 A1 A8 E5 89 A9 E4 BD 99 E7 94 B5 E9 87 8F|手表剩余电量|Chk rem power
+0.0.8.74|1|E6 89 8B E6 9C BA E9 97 B9 E9 92 9F E5 93 8D E4 BA 86|手机闹钟响了|The phone rings
+0.0.8.74|1|E8 87 AA E5 8B 95 E9 96 8B E5 95 9F E5 8B BF E6 93 BE|自動開啟勿擾|Automatic turn on
+0.0.8.74|1|E6 88 B4 E7 B4 A7 E6 89 8B E8 A1 A8|戴紧手表|Wear a watch
+0.0.8.74|1|E9 80 A3 E6 8E A5 41 50 50 E6 9B B4 E6 96 B0 E6 90 9C E5 B0 8B E8 BC 94 E5 8A A9|連接APP更新搜尋輔助|Conn APP to upd search asst
+0.0.8.32|1|E9 85 8D E9 80 9F E8 BF 87 E6 85 A2|配速过慢|Spd too slow
+0.0.8.74|1|E9 85 8D E9 80 9F E9 81 8E E6 85 A2|配速過慢|Spd too slow
+0.0.8.74|1|41 47 50 53 E5 8D 87 E7 B4 9A E6 88 90 E5 8A 9F|AGPS升級成功|AGPS upgrade OK
+0.0.8.74|1|47 50 53 E5 8D 87 E7 B4 9A E6 88 90 E5 8A 9F|GPS升級成功|GPS upgrade OK
+0.0.8.74|1|E8 B3 87 E6 BA 90 E5 BA AB E5 8D 87 E7 B4 9A E6 88 90 E5 8A 9F|資源庫升級成功|Resource upgrade OK
+0.0.8.74|1|E6 89 8B E9 8C B6 E5 8D 87 E7 B4 9A E6 88 90 E5 8A 9F|手錶升級成功|Watch upgrade OK
+0.0.8.74|1|E5 BF 83 E7 8E 87 E6 B5 8B E9 87 8F E6 9B B4 E5 87 86 E7 A1 AE|心率测量更准确|Heart rate + accurate
+0.0.8.74|1|E5 BF 83 E7 8E 87 E6 B8 AC E9 87 8F E6 9B B4 E6 BA 96 E7 A2 BA|心率測量更準確|Heart rate + accurate
+0.0.8.74|1|E8 BF 9E E6 8E A5 41 50 50 E8 87 AA E5 8A A8 E6 9B B4 E6 96 B0|连接APP自动更新|Conn APP to autoupd
+0.0.8.74|1|E9 96 8B E9 97 8A E5 A0 B4 E5 9C B0 E8 A8 8A E8 99 9F E6 9B B4 E4 BD B3|開闊場地訊號更佳|Open field signal better
+0.0.8.74|1|E5 BC 80 E9 98 94 E5 9C BA E5 9C B0 E4 BF A1 E5 8F B7 E6 9B B4 E4 BD B3|开阔场地信号更佳|Open field signal better
+0.0.8.74|1|E6 88 B4 E7 B7 8A E6 89 8B E9 8C B6|戴緊手錶|Wear a watch
+0.0.8.32|1|E5 B0 86 E6 97 A0 E6 B3 95 E8 AE B0 E5 BD 95 E8 BF 90 E5 8A A8 E8 BD A8 E8 BF B9|将无法记录运动轨迹|Can't save the track
+0.0.8.74|1|E5 B0 87 E7 84 A1 E6 B3 95 E8 A8 98 E9 8C 84 E9 81 8B E5 8B 95 E8 BB 8C E8 B7 A1|將無法記錄運動軌跡|Can't save the track
+0.0.8.32|1|E8 AE BE E7 BD AE E9 95 BF E6 8C 89 E5 BF AB E9 80 9F E5 90 AF E5 8A A8 E9 A1 B9|设置长按快速启动项|Set long press fast start

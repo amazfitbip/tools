@@ -47,8 +47,12 @@ with open(fileName, mode='r') as file:
 	line=l.lstrip('#').rstrip('\n')
 	string_fw=line.split("|")[0]
 	string_addrs=line.split("|")[1]
-	string_hex=" ".join(c for c in line.split("|")[2].split())
-	string_cn="".join(c for c in string_hex.split()).decode("hex")
+	if not line.split("|")[2] and line.split("|")[3]:
+	    string_cn=line.split("|")[3]
+	    string_hex=" ".join( [ "%02x" % ord( x ) for x in string_cn ]).upper()
+	else:
+	    string_hex=" ".join(c for c in line.split("|")[2].split())
+	    string_cn="".join(c for c in string_hex.split()).decode("hex")
 
 	#cleanup translation when switching to other language
 	if len(line.split("|")) == 5 and defaultlang == args.language:

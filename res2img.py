@@ -45,11 +45,9 @@ with open(fileName, mode='rb') as file: # b is important -> binary
 	ptr = (4 * index + 0x14)
 	buf = [ ord(elem) for elem in fileContent[ptr:ptr+4]]
 	addr = (buf[0] <<0) + (buf[1] <<8) + (buf[2] << 16) + (buf[3] <<24)
-	print buf[2]
 	offs = 4* max_rsrc + 0x14
         print "resource %d | ptr on header: %x | addr: %x | pos on file: %x" % ( index, ptr, addr, offs + addr  )
 
-    offset=16 #boh
     offset=19 +4
 
     map = []
