@@ -132,7 +132,6 @@ def get_bmp(idx):
 	#right size unscaled
 	#cmd = "convert -size "+str(width)+"x"+str(height)+"+"+str(16 + palette_len * 4) +" -depth " + str(depth) + "   -alpha off -compress NONE gray:"+filename+".raw " +filename+"." + imgfmt
 
-	print idx, strings_cn.keys()
 	if idx in list(strings_cn.keys()):
 		string = strings_cn[idx]
 		cmd = "convert -depth " + str(depth) + "  -alpha off -compress NONE -background black -fill white -font DejaVu-Sans -gravity center -pointsize 9 -size "+str(width)+"x"+str(height)+"  label:\"" + string + "\" " +filename+".jpg 2>/dev/null"
@@ -187,7 +186,7 @@ with open(fileName, mode='rb') as file: # b is important -> binary
     #TODO: add an if to enable translation
 
     #create only translate bitmap
-    extract_list = strings_cn.keys()
+    #extract_list = strings_cn.keys()
 
     for index in extract_list:
 
