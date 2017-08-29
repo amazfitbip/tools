@@ -13,6 +13,8 @@
 
 ver="4"
 
+imgfmt="png"
+
 import sys, struct, os, md5, hashlib
 fileName = "Mili_chaohu.res_3.0."+ver
 if len(sys.argv) == 2:
@@ -29,8 +31,11 @@ strings_cn = {
     181: "1",
     182: "3",
     183: "2",
-#    184, 
-#    185, 186, 187, 188, 317, 319
+    184: "5",
+    185: "6",
+    186: "Week",
+    187: "4",
+    188: "Day",
 
     #timer menu
     112: "B sync'ed",
@@ -119,14 +124,15 @@ def get_bmp(idx):
 	#cmd = "convert -size "+str(width)+"x"+str(height)+"+"+str(16 + palette_len * 4) +" -depth 8 -format GRAY rgb:"+filename+".raw " +filename+".png"
 
 	#working
-	#cmd = "convert -size "+str(width)+"x"+str(height)+"+"+str(16 + palette_len * 4) +" -depth 8  -alpha off -compress NONE -scale 800% gray:"+filename+".raw " +filename+".jpg"
+	#cmd = "convert -size "+str(width)+"x"+str(height)+"+"+str(16 + palette_len * 4) +" -depth 8  -alpha off -compress NONE -scale 800% gray:"+filename+".raw " +filename+"." + imgfmt
 
 	#right proportion zoomed
-	#cmd = "convert -size "+str(width)+"x"+str(height)+"+"+str(16 + palette_len * 4) +" -depth " + str(depth) + "   -alpha off -compress NONE -scale 800% gray:"+filename+".raw " +filename+".jpg"
+	#cmd = "convert -size "+str(width)+"x"+str(height)+"+"+str(16 + palette_len * 4) +" -depth " + str(depth) + "   -alpha off -compress NONE -scale 800% gray:"+filename+".raw " +filename+"." + imgfmt
 
 	#right size unscaled
-	#cmd = "convert -size "+str(width)+"x"+str(height)+"+"+str(16 + palette_len * 4) +" -depth " + str(depth) + "   -alpha off -compress NONE gray:"+filename+".raw " +filename+".jpg"
+	#cmd = "convert -size "+str(width)+"x"+str(height)+"+"+str(16 + palette_len * 4) +" -depth " + str(depth) + "   -alpha off -compress NONE gray:"+filename+".raw " +filename+"." + imgfmt
 
+	print idx, strings_cn.keys()
 	if idx in list(strings_cn.keys()):
 		string = strings_cn[idx]
 		cmd = "convert -depth " + str(depth) + "  -alpha off -compress NONE -background black -fill white -font DejaVu-Sans -gravity center -pointsize 9 -size "+str(width)+"x"+str(height)+"  label:\"" + string + "\" " +filename+".jpg 2>/dev/null"
@@ -150,7 +156,7 @@ def get_bmp(idx):
 		#print "DEBUG: removing "+filename+".pal"
 		os.unlink(filename+".pal")
 
-		cmd = "convert -size "+str(width)+"x"+str(height)+"+"+str(16 + palette_len * 4) +" -depth " + str(depth) + "   -alpha off -compress NONE gray:"+filename+".raw "+filename+"clut.png -clut " +filename+".jpg"
+		cmd = "convert -size "+str(width)+"x"+str(height)+"+"+str(16 + palette_len * 4) +" -depth " + str(depth) + "   -alpha off -compress NONE gray:"+filename+".raw "+filename+"clut.png -clut " +filename+"." + imgfmt
 		#print "DEBUG: %s" % cmd
 		os.system(cmd)
 		#print "DEBUG: removing "+filename+".pal"
@@ -181,7 +187,7 @@ with open(fileName, mode='rb') as file: # b is important -> binary
     #TODO: add an if to enable translation
 
     #create only translate bitmap
-    #extract_list = list(strings_cn.keys())
+    extract_list = strings_cn.keys()
 
     for index in extract_list:
 
