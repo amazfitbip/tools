@@ -74,7 +74,6 @@
 #0.0.8.32|1|E6 9A B4 E9 9B A8|暴雨|rainstorm
 0.0.8.32|1|E6 9A B4 E9 9B AA|暴雪|Blzd
 0.0.8.32|1|E6 9C AA E5 90 8C E6 AD A5 E7 9A 84 E8 BF 90 E5 8A A8 E6 95 B0 E6 8D AE|未同步的运动数据|Unloaded motion data
-0.0.8.32|1|E6 9D A5 E7 94 B5|来电|Call
 0.0.8.32|1|E6 9E 81 E9 80 9F|极速|Speed
 0.0.8.32|1|E6 9E 81 E9 99 90|极限|limit
 0.0.8.32|1|E6 A0 A1 E5 87 86 E8 B7 91 E6 AD A5 E8 B7 9D E7 A6 BB|校准跑步距离|Calib running dist
@@ -312,6 +311,7 @@
 0.0.8.74|1|E8 AB 8B E4 BD A9 E6 88 B4 E6 89 8B E9 8C B6|請佩戴手錶|Wear a watch
 0.0.8.32|1|E6 8C 82 E6 96 AD|挂断|hangUp
 0.0.8.74|1|E6 8E 9B E6 96 B7|掛斷|hangUp
+0.0.8.32|1|E6 9D A5 E7 94 B5|来电|Call
 0.0.8.74|1|E4 BE 86 E9 9B BB|來電|Call
 0.0.8.32|1|E6 97 B6 E9 97 B4 E5 88 B0 E4 BA 86 21|时间到了!|Time is up!
 0.0.8.74|1|E6 99 82 E9 96 93 E5 88 B0 E4 BA 86 21|時間到了!|Time is up!

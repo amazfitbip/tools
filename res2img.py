@@ -34,7 +34,9 @@ strings_cn = {
 
     #timer menu
     112: "Bsync",
+    #360: "Bsync",
     113: "xoff",
+    #361: "xoff",
 
     #Main menu
     294: "Alarm",
@@ -56,6 +58,9 @@ strings_cn = {
     321: "Indoor\nrun",
     323: "Outdoor\nrun",
     325: "Walking"
+
+    #345-362 Cinese2
+
 }
 
 
@@ -174,7 +179,7 @@ with open(fileName, mode='rb') as file: # b is important -> binary
     #TODO: add an if to enable translation
 
     #create only translate bitmap
-    extract_list = list(strings_cn.keys())
+    #extract_list = list(strings_cn.keys())
 
     for index in extract_list:
 
