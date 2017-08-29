@@ -25,93 +25,82 @@ if len(sys.argv) == 2:
 if not os.path.exists("_"+fileName):
     os.mkdir("_"+fileName)
 
-with open(fileName, mode='rb') as file: # b is important -> binary
-    fileContent = file.read()
-    #https://docs.python.org/3/library/struct.html#format-strings
-    fileHeader, version, dummy1, dummmy2 = struct.unpack('5sbHL', fileContent[0:16]) 
+strings_cn = {
+    181: "1",
+    182: "3",
+    183: "2",
+#    184, 
+#    185, 186, 187, 188, 317, 319
 
-    if fileHeader != "HMRES":
-	print "file isn't a resource file. Exiting"
-	os.exit(1)
-    print "file is a Haumi resource file"
-    print "version??? %d" % version
+    #timer menu
+    112: "Bsync",
+    113: "xoff",
 
-    buf = [ ord(elem) for elem in fileContent[0x10:0x10+4]]
-    max_rsrc = (buf[0] <<0) + (buf[1] <<8) + (buf[2] << 16) + (buf[3] <<24)
+    #Main menu
+    294: "Alarm",
+    296: "Compass",
+    298: "Setup",
+    300: "Activity",
+    302: "Status",
+    304: "Timer",
+    306: "Weather",
 
-    print "number of resources: %d" % max_rsrc
+    #timer menu
+    308: "Countdown",
+    310: "Stopwatch",
 
-    for index in range(max_rsrc):
-	ptr = (4 * index + 0x14)
+    #Activity menu
+     94: "Sports\nset",
+    317: "Riding",
+    319: "History",
+    321: "Indoor\nrun",
+    323: "Outdoor\nrun",
+    325: "Walking"
+}
+
+
+def get_rsrc_addr(idx):
+	ptr = (4 * idx + 0x14)
 	buf = [ ord(elem) for elem in fileContent[ptr:ptr+4]]
 	addr = (buf[0] <<0) + (buf[1] <<8) + (buf[2] << 16) + (buf[3] <<24)
-	offs = 4* max_rsrc + 0x14
-        print "resource %d | ptr on header: %x | addr: %x | pos on file: %x" % ( index, ptr, addr, offs + addr  )
+	return addr
 
-    offset=19 +4
+def get_bmp(idx):
 
-    map = []
-    firstBitmapOffset=0
-    while ( offset < len(fileContent) ):
-	#print fileContent[offset:offset+2] 
-	if fileContent[offset:offset+2] == "BM" and firstBitmapOffset == 0:
-	    map.append(offset)
-	    #print "DEBUG: identified bitmap at offset=%d" % offset
+	start = offs + get_rsrc_addr(idx)
+	if idx < max_rsrc:
+	    end = offs + get_rsrc_addr(idx + 1)
+	else:
+	    end = -1
 
-	if fileContent[offset:offset+1] == "BM":
-	    firstBitmapOffset = offset+1
-	    #break
-
-#	print ":".join("{:02x}".format(ord(c)) for c in fileContent[offset:offset+4])
-#        os.exit(1)
-#	length=int("".join("{:02x}".format(ord(c)) for c in fileContent[offset:offset+4]),16)
-#	map.append(length)
-#	offset+=4
-	#print "LEN",length #,"END",end
-	offset+=1
-
-    myoffset=firstBitmapOffset
-    for index in range(len(map)):
-
-	#if index != 293:
-	#	continue
-	#if index != 200:
-	#	continue
-
-	sys.stdout.write('.')
-	sys.stdout.flush()
-	#print 'Current fruit :', map[index]
-	#print "DEBUG",myoffset
-	start = map[index]
-	try:
-		end = map[index+1]
-	except:
-		end = -1
+	if fileContent[start:start+2] != "BM":
+	    print "ERROR: %d isn't a bitmap resource" % idx
+	    return 1
 
 	m = hashlib.md5()
 	m.update(fileContent[start:end])
-	#filename = "%03d_%s_%s.bmp" % (index, m.hexdigest(), ver)
+	#filename = "%03d_%s_%s.bmp" % (idx, m.hexdigest(), ver)
 
 	unknown1 = ord(fileContent[start+4:start+5])
 
 	unknown2 = ord(fileContent[start+6:start+7])
 
 	raw_image_width = ord(fileContent[start+8:start+9])
-	#filename = "%03d_%03d_%s" % (index, raw_image_width, ver)
-	filename = "_"+fileName +  os.path.sep + "%03d_%02x_%02x_%s" % (index, unknown1, unknown2, ver)
+	#filename = "%03d_%03d_%s" % (idx, raw_image_width, ver)
+	filename = "_"+fileName +  os.path.sep + "%03d_%02x_%02x_%s" % (idx, unknown1, unknown2, ver)
 	palette_len = ord(fileContent[start+12:start+13])
 	#print DEBUG: palette_len=%d" % palette_len
 
 	newFile = open(filename+".raw", "wb")
 	#newFile = open(str(start)+"_"+str(end)+".bmp", "wb")
-	#newFile = open("index_"+str(index)+"_"+str(start)+".bmp", "wb")
+	#newFile = open("idx_"+str(idx)+"_"+str(start)+".bmp", "wb")
 	# write to file
 	newFile.write(fileContent[start:end])
 	newFile.close()
 
 	#newFile = open(filename+".raw", "wb")
 	#newFile = open(str(start)+"_"+str(end)+".bmp", "wb")
-	#newFile = open("index_"+str(index)+"_"+str(start)+".bmp", "wb")
+	#newFile = open("idx_"+str(idx)+"_"+str(start)+".bmp", "wb")
 	# write to file
 	#newFile.write(fileContent[start+16+ ( palette_len * 4) :end])
 	#newFile.close()
@@ -131,31 +120,68 @@ with open(fileName, mode='rb') as file: # b is important -> binary
 	#right size unscaled
 	#cmd = "convert -size "+str(raw_image_width * 4)+"x"+str(raw_image_height)+"+"+str(16 + palette_len * 4) +" -depth 2  -alpha off -compress NONE gray:"+filename+".raw " +filename+".jpg"
 
-	palfile = open(filename+".pal","w")
-	for i in range(palette_len):
-	    #print "i: %x" %(16 + i)
-	    r=ord(fileContent[start+16+ ( 4*i+0):start+16+ ( 4*i+1)])
-	    g=ord(fileContent[start+16+ ( 4*i+1):start+16+ ( 4*i+2)])
-	    b=ord(fileContent[start+16+ ( 4*i+2):start+16+ ( 4*i+3)])
-	    a=ord(fileContent[start+16+ ( 4*i+3):start+16+ ( 4*i+4)])
-	    #print "DEBUG: rgb(%d,%d,%d)" %(r,g,b)
-	    if a != 0:
-		print "DEBUG: alpha(%d)" %a
-	    palfile.write("xc:rgb(%d,%d,%d)\n" % ( r,g,b))
-	palfile.close()
+	if idx in list(strings_cn.keys()):
+		string = strings_cn[idx]
+		cmd = "convert -depth 2 -alpha off -compress NONE -background black -fill white -font DejaVu-Sans -gravity center -pointsize 8 -size "+str(raw_image_width * 4)+"x"+str(raw_image_height)+"  label:\"" + string + "\" " +filename+".jpg 2>/dev/null"
+		os.system(cmd)
+	else:
+		palfile = open(filename+".pal","w")
+		for i in range(palette_len):
+		    #print "i: %x" %(16 + i)
+		    r=ord(fileContent[start+16+ ( 4*i+0):start+16+ ( 4*i+1)])
+		    g=ord(fileContent[start+16+ ( 4*i+1):start+16+ ( 4*i+2)])
+		    b=ord(fileContent[start+16+ ( 4*i+2):start+16+ ( 4*i+3)])
+		    a=ord(fileContent[start+16+ ( 4*i+3):start+16+ ( 4*i+4)])
+		    #print "DEBUG: rgb(%d,%d,%d)" %(r,g,b)
+		    if a != 0:
+			print "DEBUG: alpha(%d)" %a
+		    palfile.write("xc:rgb(%d,%d,%d)\n" % ( r,g,b))
+		palfile.close()
+		cmd="convert @"+filename+".pal +append "+filename+"clut.png"
+		#print "DEBUG: %s" % cmd
+		os.system(cmd)
+		#print "DEBUG: removing "+filename+".pal"
+		os.unlink(filename+".pal")
 
-	cmd="convert @"+filename+".pal +append "+filename+"clut.png"
-	#print "DEBUG: %s" % cmd
-	os.system(cmd)
+		cmd = "convert -size "+str(raw_image_width * 4)+"x"+str(raw_image_height)+"+"+str(16 + palette_len * 4) +" -depth 2  -alpha off -compress NONE gray:"+filename+".raw "+filename+"clut.png -clut " +filename+".jpg"
+		#print "DEBUG: %s" % cmd
+		os.system(cmd)
+		#print "DEBUG: removing "+filename+".pal"
+		os.unlink(filename+"clut.png")
 
-	#print "DEBUG: removing "+filename+".pal"
-	os.unlink(filename+".pal")
 
-	cmd = "convert -size "+str(raw_image_width * 4)+"x"+str(raw_image_height)+"+"+str(16 + palette_len * 4) +" -depth 2  -alpha off -compress NONE gray:"+filename+".raw "+filename+"clut.png -clut " +filename+".jpg"
-	#print "DEBUG: %s" % cmd
-	os.system(cmd)
+with open(fileName, mode='rb') as file: # b is important -> binary
+    fileContent = file.read()
+    #https://docs.python.org/3/library/struct.html#format-strings
+    fileHeader, version, dummy1, dummmy2 = struct.unpack('5sbHL', fileContent[0:16]) 
 
-	#print "DEBUG: removing "+filename+".pal"
-	os.unlink(filename+"clut.png")
-	
-	#myoffset = end
+    if fileHeader != "HMRES":
+	print "file isn't a resource file. Exiting"
+	os.exit(1)
+    print "file is a Haumi resource file"
+    print "version??? %d" % version
+
+    buf = [ ord(elem) for elem in fileContent[0x10:0x10+4]]
+    max_rsrc = (buf[0] <<0) + (buf[1] <<8) + (buf[2] << 16) + (buf[3] <<24)
+
+    print "number of resources: %d" % max_rsrc
+
+    offs = 4 * max_rsrc + 0x14
+
+    #extract all bitmap and translate the one in the list
+    extract_list = range(max_rsrc)
+
+    #TODO: add an if to enable translation
+
+    #create only translate bitmap
+    extract_list = list(strings_cn.keys())
+
+    for index in extract_list:
+
+	addr = get_rsrc_addr(index)
+        print "resource %3d | addr: %x | pos on file: %x" % ( index, addr, offs + addr )
+
+	#sys.stdout.write('.')
+	#sys.stdout.flush()
+
+	get_bmp(index)
