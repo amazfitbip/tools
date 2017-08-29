@@ -33,9 +33,9 @@ strings_cn = {
 #    185, 186, 187, 188, 317, 319
 
     #timer menu
-    112: "Bsync",
+    112: "B sync'ed",
     #360: "Bsync",
-    113: "xoff",
+    113: "x disconn",
     #361: "xoff",
 
     #Main menu
@@ -49,10 +49,10 @@ strings_cn = {
 
     #timer menu
     308: "Countdown",
-    310: "Stopwatch",
+    310: "Stop\nwatch",
 
     #Activity menu
-     94: "Sports\nset",
+     94: "Sports set",
     317: "Riding",
     319: "History",
     321: "Indoor\nrun",
@@ -86,13 +86,16 @@ def get_bmp(idx):
 	m.update(fileContent[start:end])
 	#filename = "%03d_%s_%s.bmp" % (idx, m.hexdigest(), ver)
 
-	unknown1 = ord(fileContent[start+4:start+5])
+	unk = ord(fileContent[start+8:start+9])
 
-	unknown2 = ord(fileContent[start+6:start+7])
+	width = ord(fileContent[start+4:start+5])
+	height = ord(fileContent[start+6:start+7])
 
-	raw_image_width = ord(fileContent[start+8:start+9])
-	#filename = "%03d_%03d_%s" % (idx, raw_image_width, ver)
-	filename = "_"+fileName +  os.path.sep + "%03d_%02x_%02x_%s" % (idx, unknown1, unknown2, ver)
+	depth = ord(fileContent[start+0xa:start+0xb])
+
+	print "idx: %d - depth %d bpp - w: %d - h: %d - ??? %d " % (idx, depth, width, height, unk)
+
+	filename = "_"+fileName +  os.path.sep + "%03d_%s" % (idx, ver)
 	palette_len = ord(fileContent[start+12:start+13])
 	#print DEBUG: palette_len=%d" % palette_len
 
@@ -112,22 +115,21 @@ def get_bmp(idx):
 
 	raw_image = fileContent[start+16+ ( palette_len * 4) :end]
 	raw_image_size = len(raw_image)
-	raw_image_height = raw_image_size / raw_image_width
 
-	#cmd = "convert -size "+str(raw_image_width)+"x"+str(raw_image_height)+"+"+str(16 + palette_len * 4) +" -depth 8 -format GRAY rgb:"+filename+".raw " +filename+".png"
+	#cmd = "convert -size "+str(width)+"x"+str(height)+"+"+str(16 + palette_len * 4) +" -depth 8 -format GRAY rgb:"+filename+".raw " +filename+".png"
 
 	#working
-	#cmd = "convert -size "+str(raw_image_width)+"x"+str(raw_image_height)+"+"+str(16 + palette_len * 4) +" -depth 8  -alpha off -compress NONE -scale 800% gray:"+filename+".raw " +filename+".jpg"
+	#cmd = "convert -size "+str(width)+"x"+str(height)+"+"+str(16 + palette_len * 4) +" -depth 8  -alpha off -compress NONE -scale 800% gray:"+filename+".raw " +filename+".jpg"
 
 	#right proportion zoomed
-	#cmd = "convert -size "+str(raw_image_width * 4)+"x"+str(raw_image_height)+"+"+str(16 + palette_len * 4) +" -depth 2  -alpha off -compress NONE -scale 800% gray:"+filename+".raw " +filename+".jpg"
+	#cmd = "convert -size "+str(width)+"x"+str(height)+"+"+str(16 + palette_len * 4) +" -depth " + str(depth) + "   -alpha off -compress NONE -scale 800% gray:"+filename+".raw " +filename+".jpg"
 
 	#right size unscaled
-	#cmd = "convert -size "+str(raw_image_width * 4)+"x"+str(raw_image_height)+"+"+str(16 + palette_len * 4) +" -depth 2  -alpha off -compress NONE gray:"+filename+".raw " +filename+".jpg"
+	#cmd = "convert -size "+str(width)+"x"+str(height)+"+"+str(16 + palette_len * 4) +" -depth " + str(depth) + "   -alpha off -compress NONE gray:"+filename+".raw " +filename+".jpg"
 
 	if idx in list(strings_cn.keys()):
 		string = strings_cn[idx]
-		cmd = "convert -depth 2 -alpha off -compress NONE -background black -fill white -font DejaVu-Sans -gravity center -pointsize 8 -size "+str(raw_image_width * 4)+"x"+str(raw_image_height)+"  label:\"" + string + "\" " +filename+".jpg 2>/dev/null"
+		cmd = "convert -depth " + str(depth) + "  -alpha off -compress NONE -background black -fill white -font DejaVu-Sans -gravity center -pointsize 9 -size "+str(width)+"x"+str(height)+"  label:\"" + string + "\" " +filename+".jpg 2>/dev/null"
 		os.system(cmd)
 	else:
 		palfile = open(filename+".pal","w")
@@ -148,7 +150,7 @@ def get_bmp(idx):
 		#print "DEBUG: removing "+filename+".pal"
 		os.unlink(filename+".pal")
 
-		cmd = "convert -size "+str(raw_image_width * 4)+"x"+str(raw_image_height)+"+"+str(16 + palette_len * 4) +" -depth 2  -alpha off -compress NONE gray:"+filename+".raw "+filename+"clut.png -clut " +filename+".jpg"
+		cmd = "convert -size "+str(width)+"x"+str(height)+"+"+str(16 + palette_len * 4) +" -depth " + str(depth) + "   -alpha off -compress NONE gray:"+filename+".raw "+filename+"clut.png -clut " +filename+".jpg"
 		#print "DEBUG: %s" % cmd
 		os.system(cmd)
 		#print "DEBUG: removing "+filename+".pal"

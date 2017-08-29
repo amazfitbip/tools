@@ -12,6 +12,9 @@ translator = Translator()
 #print translator.translate('안녕하세요.', dest='en')
 #.decode("hex")
 
+safe_addr = {
+    "0.0.8.74":"00066050",
+}
 
 parser = argparse.ArgumentParser(description='Auto-translate and patch firmware files')
 parser.add_argument('-l', '--language', dest='language', default="en", #choices=["en","it"], 
