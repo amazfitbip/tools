@@ -75,6 +75,16 @@ def get_rsrc_addr(idx):
 	addr = (buf[0] <<0) + (buf[1] <<8) + (buf[2] << 16) + (buf[3] <<24)
 	return addr
 
+def gen_raw():
+
+	bpp = "identify -format '%[bit-depth]' 200_4.png"
+	bpp = "identify -format '%[width]' 200_4.png"
+	bpp = "identify -format '%[height]' 200_4.png"
+
+	cmd = "convert 000_4.png -depth 8 -format '%c' histogram:info:-"
+	os.system(cmd)
+
+
 def get_bmp(idx):
 
 	start = offs + get_rsrc_addr(idx)
@@ -134,7 +144,7 @@ def get_bmp(idx):
 
 	if idx in list(strings_cn.keys()):
 		string = strings_cn[idx]
-		cmd = "convert -depth " + str(depth) + "  -alpha off -compress NONE -background black -fill white -font DejaVu-Sans -gravity center -pointsize 9 -size "+str(width)+"x"+str(height)+"  label:\"" + string + "\" " +filename+".jpg 2>/dev/null"
+		cmd = "convert -depth " + str(depth) + "  -alpha off -compress NONE -background black -fill white -font DejaVu-Sans -gravity center -pointsize 9 -size "+str(width)+"x"+str(height)+"  label:\"" + string + "\" " +filename+"." + imgfmt +" 2>/dev/null"
 		os.system(cmd)
 	else:
 		palfile = open(filename+".pal","w")
@@ -197,3 +207,6 @@ with open(fileName, mode='rb') as file: # b is important -> binary
 	#sys.stdout.flush()
 
 	get_bmp(index)
+
+
+
