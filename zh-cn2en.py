@@ -44,7 +44,7 @@ with open(inputTxtFileName, mode='r') as file:
     for l in file:
 	line=l.lstrip('#').rstrip('\n')
 	string_fw=line.split("|")[0]
-	string_addrs=line.split("|")[1]
+	string_addrs= [int(c,16) for c in (line.split("|")[1]).split(",")]
 	if not line.split("|")[2] and line.split("|")[3]:
 	    string_cn=line.split("|")[3]
 	    string_hex=" ".join( [ "%02x" % ord( x ) for x in string_cn ]).upper()
@@ -77,7 +77,7 @@ if args.auto_translate:
 		if len(string_translated) <= len(string_cn) and translation_tuple not in translation_tuples:
 			translation_tuples.append(translation_tuple)
 
-		out_lines.append("%s%s|%s|%s|%s|%s\n" % (line_header, string_fw,string_addrs,string_hex, string_cn, string_translated))
+		out_lines.append("%s%s|%s|%s|%s|%s\n" % (line_header, string_fw,",".join(["%08X" % c for c in string_addrs]),string_hex, string_cn, string_translated))
 
 		print "%s%s => %s(%d) = %s(%d)" % (line_header, string_hex,string_cn,len(string_cn),string_translated,len(string_translated))
 
@@ -167,13 +167,13 @@ if args.patch:
     	        break
 
 	    #avoid wrong substitution
-	    if ord(s_ar[ix+len(find_str.decode("hex"))]) != 0 or (version == "0.0.8.74" and ix < int("00066050",16)):
+	    if ord(s_ar[ix+len(find_str.decode("hex"))]) != 0 or (version == translation_tuples_s[index][0] and version == "0.0.8.74" and ix < int("00066050",16) and ix not in (translation_tuples_s[index][2])):
 		print('0x%s %s (%s) SKIPPED (unsafe) at %x :-|' % (find_str_user_friendly, find_str.decode("hex"), translation_tuples_s[index][1], ix))
     		ix += len(find_str.decode("hex")) # +2 because len('ll') == 2
 		continue
 
 	    found_cnt+=1
-	    len_addrs=len((translation_tuples_s[index][2]).split(","))
+	    len_addrs=len(translation_tuples_s[index][2])
 	    warning=""
 	    if found_cnt >len_addrs:
 		warning="!!!!!!!!!!!!!"
