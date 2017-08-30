@@ -173,6 +173,11 @@ if args.patch:
 		    print('0x%s %s (%s) NOT FOUND :-(' % (find_str_user_friendly, find_str.decode("hex"), translation_tuples_s[index][1]))
     	        break
 
+	    if translation_tuples_s[index][2][0] != 1 and ix not in (translation_tuples_s[index][2]):
+		print('0x%s %s (%s) SKIPPED (unsafe) at %08X not in %s' % (find_str_user_friendly, find_str.decode("hex"), translation_tuples_s[index][1], ix, ",".join(["%08X" % c for c in translation_tuples_s[index][2]])))
+    		ix += len(find_str.decode("hex")) # +2 because len('ll') == 2
+		continue
+
 	    #avoid wrong substitution
 	    if ord(s_ar[ix+len(find_str.decode("hex"))]) != 0 or (string_fw == version and ix < int(safe_address,16) and ix not in (translation_tuples_s[index][2])):
 		print('0x%s %s (%s) SKIPPED (unsafe) at %x :-|' % (find_str_user_friendly, find_str.decode("hex"), translation_tuples_s[index][1], ix))
