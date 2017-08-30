@@ -11,14 +11,30 @@
 
 #http://www.imagemagick.org/discourse-server/viewtopic.php?f=1&t=24193&hilit=clut
 
-ver="4"
-
 imgfmt="png"
 
-import sys, struct, os, md5, hashlib
-fileName = "Mili_chaohu.res_3.0."+ver
+import sys, struct, os, md5, hashlib, argparse
 if len(sys.argv) == 2:
     fileName = sys.argv[1]
+
+parser = argparse.ArgumentParser(description='Auto-translate and patch firmware files')
+parser.add_argument('-l', '--language', dest='language', default="en", #choices=["en","it"],.
+					help='l (default:%(default)s)' #, required=True
+		    )
+#parser.add_argument('-o', '--output', type=str, dest='output', help='output name of translation file, default zh-cn2en.txt')
+parser.add_argument('-i', '--input', type=str, dest='input', help='input name of resource file (default:%(default)s)', default='Mili_chaohu.res')
+parser.add_argument('-a', '--auto_translate', action='store_true', dest='translate', help='auto translate resource file using known dict')
+#parser.add_argument('-m', '--manual_translate', action='store_true',dest='manual_translate', help='manually translate input file')
+#parser.add_argument('-f', '--fw', dest='firmwareFile', default="Mili_chaohu.fw", help='f (default:%(default)s)')
+#parser.add_argument('-v', dest='verbose', action='store_true', help='verbose')
+#parser.add_argument('-p', dest='patch', action='store_true', help='patch firmware file. You can patch firmware with auto translated text (-t), or with manually translated text (-m), or with input file only
+#parser.add_argument('-a', dest='analyze', action='store_true', help='analyze input file')
+#parser.add_argument("--type", default="toto", choices=["toto","titi"],
+#                              help = "type (default: %(default)s)")
+#parser.set_defaults(language='en', fw='Mili_chaohu.fw')
+args = parser.parse_args()
+
+fileName = args.input
 
 #with open('abc.dat', 'rb') as fobj:
 #    byte_string, n1, n4 = struct.unpack('4sbI', fobj.read(12)) 
@@ -101,6 +117,7 @@ def get_bmp(idx):
 	m.update(fileContent[start:end])
 	#filename = "%03d_%s_%s.bmp" % (idx, m.hexdigest(), ver)
 
+	#I don't know yet what is this bit
 	unk = ord(fileContent[start+8:start+9])
 
 	width = ord(fileContent[start+4:start+5])
@@ -110,40 +127,21 @@ def get_bmp(idx):
 
 	print "idx: %d - depth %d bpp - w: %d - h: %d - ??? %d " % (idx, depth, width, height, unk)
 
-	filename = "_"+fileName +  os.path.sep + "%03d_%s" % (idx, ver)
+	filename = "_"+fileName +  os.path.sep + "%03d" % (idx)
 	palette_len = ord(fileContent[start+12:start+13])
 	#print DEBUG: palette_len=%d" % palette_len
 
 	newFile = open(filename+".raw", "wb")
-	#newFile = open(str(start)+"_"+str(end)+".bmp", "wb")
-	#newFile = open("idx_"+str(idx)+"_"+str(start)+".bmp", "wb")
 	# write to file
 	newFile.write(fileContent[start:end])
 	newFile.close()
 
-	#newFile = open(filename+".raw", "wb")
-	#newFile = open(str(start)+"_"+str(end)+".bmp", "wb")
-	#newFile = open("idx_"+str(idx)+"_"+str(start)+".bmp", "wb")
-	# write to file
-	#newFile.write(fileContent[start+16+ ( palette_len * 4) :end])
-	#newFile.close()
-
 	raw_image = fileContent[start+16+ ( palette_len * 4) :end]
 	raw_image_size = len(raw_image)
 
-	#cmd = "convert -size "+str(width)+"x"+str(height)+"+"+str(16 + palette_len * 4) +" -depth 8 -format GRAY rgb:"+filename+".raw " +filename+".png"
-
-	#working
-	#cmd = "convert -size "+str(width)+"x"+str(height)+"+"+str(16 + palette_len * 4) +" -depth 8  -alpha off -compress NONE -scale 800% gray:"+filename+".raw " +filename+"." + imgfmt
-
-	#right proportion zoomed
-	#cmd = "convert -size "+str(width)+"x"+str(height)+"+"+str(16 + palette_len * 4) +" -depth " + str(depth) + "   -alpha off -compress NONE -scale 800% gray:"+filename+".raw " +filename+"." + imgfmt
-
-	#right size unscaled
-	#cmd = "convert -size "+str(width)+"x"+str(height)+"+"+str(16 + palette_len * 4) +" -depth " + str(depth) + "   -alpha off -compress NONE gray:"+filename+".raw " +filename+"." + imgfmt
-
-	if idx in list(strings_cn.keys()):
+	if args.translate and idx in list(strings_cn.keys()):
 		string = strings_cn[idx]
+		print "translating %d with %s" % (idx, string)
 		cmd = "convert -depth " + str(depth) + "  -alpha off -compress NONE -background black -fill white -font DejaVu-Sans -gravity center -pointsize 9 -size "+str(width)+"x"+str(height)+"  label:\"" + string + "\" " +filename+"." + imgfmt +" 2>/dev/null"
 		os.system(cmd)
 	else:
