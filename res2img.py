@@ -144,8 +144,8 @@ def gen_raw(idx):
 			    pass
 		print palette
 
-		FIXME=0x15
-		header_bmp = [ 0x42, 0x4D, 0x64, 0x00, int(width), 0x00, int(height) , 0x00, FIXME, 0x00, int(depth) , 0x00, len(palette) /4, 0 ,0 ,0 ]
+		stride=int(int(width) * int(depth) / 8) + ((int(width) * int(depth) )% 8 > 0)
+		header_bmp = [ 0x42, 0x4D, 0x64, 0x00, int(width), 0x00, int(height) , 0x00, stride, 0x00, int(depth) , 0x00, len(palette) /4, 0 ,0 ,0 ]
 		print header_bmp
 		header_bmp.extend(palette)
 		print header_bmp
@@ -155,8 +155,7 @@ def gen_raw(idx):
 			rawnew.write("".join(chr(e) for e in header_bmp))
 			rawnew.close()
 	    
-		filename = dirName+"/001"
-		cmd = "convert -size "+str(width)+"x"+str(height)+"+"+str(16 + len(palette) * 4) +" -depth " + str(depth) + " +antialias -alpha off " +filename+"." + imgfmt + " -compress NONE gray:- >>"+raw
+		cmd = "convert -size "+str(width)+"x"+str(height)+"+"+str(16 + len(palette) * 4) +" -depth " + str(depth) + " +antialias -alpha off " + img + " -compress NONE gray:- >>"+raw
 		print "DEBUG: %s" % cmd
 		os.system(cmd)
 
@@ -212,7 +211,7 @@ def get_bmp(idx):
 		print "translating %d with %s" % (idx, string)
 		cmd = "convert -depth " + str(depth) + "  -alpha off -compress NONE -background black -fill white -font DejaVu-Sans -gravity center -pointsize 9 -size "+str(width)+"x"+str(height)+"  label:\"" + string + "\" " +filename+"." + imgfmt +" 2>/dev/null"
 		os.system(cmd)
-		os.utime(filename+"." + imgfmt, (mtime+5, mtime+5))  # Set access/modified times to now
+		os.utime(filename+"." + imgfmt, (mtime+60, mtime+60))  # Set access/modified times to now
 	else:
 		palfile = open(filename+".pal","w")
 		for i in range(palette_len):
@@ -268,13 +267,12 @@ with open(fileName, mode='rb') as file: # b is important -> binary
 
     offs = 4 * max_rsrc + 0x14
 
-    #extract all bitmap and translate the one in the list
-    extract_list = range(max_rsrc)
-
-    #TODO: add an if to enable translation
-
-    #create only translate bitmap
-    #extract_list = strings_cn.keys()
+    if args.translate:
+	#create only translate bitmap
+	extract_list = strings_cn.keys()
+    else:
+	#extract all bitmap and translate the one in the list
+	extract_list = range(max_rsrc)
 
     for index in extract_list:
 
@@ -285,8 +283,6 @@ with open(fileName, mode='rb') as file: # b is important -> binary
 	#sys.stdout.flush()
 
 	get_bmp(index)
-
-
 
 #pack
 header_res = [ 0x48, 0x4D, 0x52, 0x45, 0x53, version , 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF ]
