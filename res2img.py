@@ -220,7 +220,7 @@ def get_bmp(idx):
 		print "translating %d with %s" % (idx, string)
 		cmd = "convert -depth " + str(depth) + "  -alpha off -compress NONE -background black -fill white -font DejaVu-Sans -gravity center -pointsize 9 -size "+str(width)+"x"+str(height)+"  label:\"" + string + "\" " +filename+"." + imgfmt +" 2>/dev/null"
 		os.system(cmd)
-		os.utime(filename+"." + imgfmt, (mtime+60, mtime+60))  # Set access/modified times to now
+		os.utime(filename+"." + imgfmt, (mtime+60, mtime+60))  # Set access/modified times in the future 
 	else:
 		palfile = open(filename+".pal","w")
 		for i in range(palette_len):
