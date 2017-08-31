@@ -138,11 +138,12 @@ def gen_raw(idx):
 
 		for line in out.split("\n"):
 			try:
-			    m = re.match(r".+?(\d+)\,\s+(\d+),\s+(\d+)?.+", line)
+			    #print "PALETTE=",line
+			    m = re.match(r".+?(\d+)\,\s*(\d+),\s*(\d+)?.+", line)
 			    palette.extend( [ int(m.groups()[0]),int(m.groups()[1]),int(m.groups()[2],0), 0])
 			except:
 			    pass
-		print palette
+		#print "idx =" + str(idx)+" PALETTE=",palette
 
 		stride=int(int(width) * int(depth) / 8) + ((int(width) * int(depth) )% 8 > 0)
 		header_bmp = [ 0x42, 0x4D, 0x64, 0x00, int(width), 0x00, int(height) , 0x00, stride, 0x00, int(depth) , 0x00, len(palette) /4, 0 ,0 ,0 ]
