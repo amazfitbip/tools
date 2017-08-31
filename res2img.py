@@ -33,6 +33,10 @@ parser.add_argument('-l', '--language', dest='language', default="en", #choices=
 #parser.add_argument('-o', '--output', type=str, dest='output', help='output name of translation file, default zh-cn2en.txt')
 parser.add_argument('-i', '--input', type=str, dest='input', help='input name of resource file (default:%(default)s)', default='Mili_chaohu.res')
 parser.add_argument('-a', '--auto_translate', action='store_true', dest='translate', help='auto translate resource file using known dict')
+
+parser.add_argument('-u', dest='unpack', action='store_true', help='unrepack the res file')
+parser.add_argument('-p', dest='pack', action='store_true', help='repack the res file')
+
 #parser.add_argument('-m', '--manual_translate', action='store_true',dest='manual_translate', help='manually translate input file')
 #parser.add_argument('-f', '--fw', dest='firmwareFile', default="Mili_chaohu.fw", help='f (default:%(default)s)')
 #parser.add_argument('-v', dest='verbose', action='store_true', help='verbose')
@@ -42,6 +46,10 @@ parser.add_argument('-a', '--auto_translate', action='store_true', dest='transla
 #                              help = "type (default: %(default)s)")
 #parser.set_defaults(language='en', fw='Mili_chaohu.fw')
 args = parser.parse_args()
+
+if not (args.pack or args.unpack):
+    print "no argument"
+    sys.exit(1)
 
 fileName = args.input
 
@@ -110,8 +118,8 @@ def gen_raw(idx):
 	#the png has been edited... recreate the new raw and load in memory
 	raw="%s%s%03d.%s" % (dirName , os.path.sep , idx, "raw")
 
-	print "QUI1",raw,os.path.getmtime(raw)
-	print "QUI1",img,os.path.getmtime(img)
+	#print "QUI1",raw,os.path.getmtime(raw)
+	#print "QUI1",img,os.path.getmtime(img)
 
 	if os.path.getmtime(raw) != os.path.getmtime(img):
 		cmd = "identify -format %%[bit-depth] %s%s%03d.%s" % (dirName, os.path.sep, idx, imgfmt)
@@ -147,9 +155,9 @@ def gen_raw(idx):
 
 		stride=int(int(width) * int(depth) / 8) + ((int(width) * int(depth) )% 8 > 0)
 		header_bmp = [ 0x42, 0x4D, 0x64, 0x00, int(width), 0x00, int(height) , 0x00, stride, 0x00, int(depth) , 0x00, len(palette) /4, 0 ,0 ,0 ]
-		print header_bmp
+		#print header_bmp
 		header_bmp.extend(palette)
-		print header_bmp
+		#print header_bmp
 
 		#os.system(cmd)
 		with open(raw, mode='wb') as rawnew:
@@ -157,11 +165,11 @@ def gen_raw(idx):
 			rawnew.close()
 	    
 		cmd = "convert -size "+str(width)+"x"+str(height)+"+"+str(16 + len(palette) * 4) +" -depth " + str(depth) + " +antialias -alpha off " + img + " -compress NONE gray:- >>"+raw
-		print "DEBUG: %s" % cmd
+		#print "DEBUG: %s" % cmd
 		os.system(cmd)
 
 	else:
-		print "no changes to user friendly image"
+		pass
 
 	with open(raw, mode='rb') as rawimg:
 		img = [ord(c) for c in rawimg.read()]
@@ -249,58 +257,61 @@ def get_bmp(idx):
 
 mtime = time.mktime(datetime.datetime.now().timetuple())
 
-#unpack
 with open(fileName, mode='rb') as file: # b is important -> binary
-    fileContent = file.read()
-    #https://docs.python.org/3/library/struct.html#format-strings
-    fileHeader, version, dummy1, dummmy2 = struct.unpack('5sbHL', fileContent[0:16]) 
+	fileContent = file.read()
+	#https://docs.python.org/3/library/struct.html#format-strings
+	fileHeader, version, dummy1, dummmy2 = struct.unpack('5sbHL', fileContent[0:16]) 
+	if fileHeader != "HMRES":
+	    print "file isn't a resource file. Exiting"
+	    os.exit(1)
+	print "file is a Haumi resource file"
+	print "version??? %d" % version
 
-    if fileHeader != "HMRES":
-	print "file isn't a resource file. Exiting"
-	os.exit(1)
-    print "file is a Haumi resource file"
-    print "version??? %d" % version
+	buf = [ ord(elem) for elem in fileContent[0x10:0x10+4]]
+	max_rsrc = (buf[0] <<0) + (buf[1] <<8) + (buf[2] << 16) + (buf[3] <<24)
 
-    buf = [ ord(elem) for elem in fileContent[0x10:0x10+4]]
-    max_rsrc = (buf[0] <<0) + (buf[1] <<8) + (buf[2] << 16) + (buf[3] <<24)
+	print "number of resources: %d" % max_rsrc
 
-    print "number of resources: %d" % max_rsrc
+#unpack
+if args.unpack:
 
-    offs = 4 * max_rsrc + 0x14
+	offs = 4 * max_rsrc + 0x14
 
-    if args.translate:
-	#create only translate bitmap
-	extract_list = strings_cn.keys()
-    else:
-	#extract all bitmap and translate the one in the list
-	extract_list = range(max_rsrc)
+	if args.translate:
+	    #create only translate bitmap
+	    extract_list = strings_cn.keys()
+	else:
+	    #extract all bitmap and translate the one in the list
+	    extract_list = range(max_rsrc)
 
-    for index in extract_list:
+	for index in extract_list:
 
-	addr = get_rsrc_addr(index)
-        print "resource %3d | addr: %x | pos on file: %x" % ( index, addr, offs + addr )
+	    addr = get_rsrc_addr(index)
+	    print "resource %3d | addr: %x | pos on file: %x" % ( index, addr, offs + addr )
 
-	#sys.stdout.write('.')
-	#sys.stdout.flush()
-
-	get_bmp(index)
+	    #sys.stdout.write('.')
+	    #sys.stdout.flush()
+	    get_bmp(index)
 
 #pack
-header_res = [ 0x48, 0x4D, 0x52, 0x45, 0x53, version , 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF ]
-#extend the array to make space for number of element and resource's index
-header_res.extend([0]*( 4 + 4 * max_rsrc))
-for i in range(4):
-    header_res[0x10 + i] = (max_rsrc >> 8*i) & 0xFF
+if args.pack:
+    header_res = [ 0x48, 0x4D, 0x52, 0x45, 0x53, version , 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF ]
+    #extend the array to make space for number of element and resource's index
+    header_res.extend([0]*( 4 + 4 * max_rsrc))
+    for i in range(4):
+        header_res[0x10 + i] = (max_rsrc >> 8*i) & 0xFF
 
-offset = 0
-for index in range(max_rsrc):
+    offset = 0
+    for index in range(max_rsrc):
 	for i in range(4):
-	    print (0x14 + index *4 +i), (offset >> 8*i) & 0xFF
+	    #print (0x14 + index *4 +i), (offset >> 8*i) & 0xFF
 	    header_res[0x14 + index  * 4+i] = (offset >> 8*i) & 0xFF
 	img = gen_raw(index)
 	header_res.extend(img)
 	offset += len(img)
 
+    with open(fileName+".new", mode='wb') as output:
+        output.write("".join(chr(c) for c in header_res))
 
-with open(fileName+".new", mode='wb') as output:
-    output.write("".join(chr(c) for c in header_res))
+    print fileName+".new" + " created"
+
