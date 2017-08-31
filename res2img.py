@@ -19,8 +19,6 @@
 
 #http://www.imagemagick.org/discourse-server/viewtopic.php?f=1&t=24193&hilit=clut
 
-#imgfmt="png"
-imgfmt="bmp"
 
 import sys, struct, os, md5, hashlib, argparse, time, datetime, subprocess, re
 if len(sys.argv) == 2:
@@ -33,6 +31,8 @@ parser.add_argument('-l', '--language', dest='language', default="en", #choices=
 #parser.add_argument('-o', '--output', type=str, dest='output', help='output name of translation file, default zh-cn2en.txt')
 parser.add_argument('-i', '--input', type=str, dest='input', help='input name of resource file (default:%(default)s)', default='Mili_chaohu.res')
 parser.add_argument('-a', '--auto_translate', action='store_true', dest='translate', help='auto translate resource file using known dict')
+
+parser.add_argument('-f', '--format', type=str, dest='imgfmt', help='format of img to generate', default='bmp')
 
 parser.add_argument('-u', dest='unpack', action='store_true', help='unrepack the res file')
 parser.add_argument('-p', dest='pack', action='store_true', help='repack the res file')
@@ -50,6 +50,8 @@ args = parser.parse_args()
 if not (args.pack or args.unpack):
     print "no argument"
     sys.exit(1)
+
+imgfmt=args.imgfmt
 
 fileName = args.input
 
@@ -218,7 +220,7 @@ def get_bmp(idx):
 	if args.translate and idx in list(strings_cn.keys()):
 		string = strings_cn[idx]
 		print "translating %d with %s" % (idx, string)
-		cmd = "convert -depth " + str(depth) + "  -alpha off -compress NONE -background black -fill white -font DejaVu-Sans -gravity center -pointsize 9 -size "+str(width)+"x"+str(height)+"  label:\"" + string + "\" " +filename+"." + imgfmt +" 2>/dev/null"
+		cmd = "convert -depth " + str(depth) + " -alpha off -compress NONE -background black -fill white -font DejaVu-Sans -gravity center -pointsize 9 -size "+str(width)+"x"+str(height)+"  label:\"" + string + "\" " +filename+"." + imgfmt +" 2>/dev/null"
 		os.system(cmd)
 		os.utime(filename+"." + imgfmt, (mtime+60, mtime+60))  # Set access/modified times in the future 
 	else:
@@ -240,7 +242,10 @@ def get_bmp(idx):
 		#print "DEBUG: removing "+filename+".pal"
 		os.unlink(filename+".pal")
 
-		cmd = "convert -size "+str(width)+"x"+str(height)+"+"+str(16 + palette_len * 4) +" -depth " + str(depth) + " +antialias -alpha off -compress NONE gray:"+filename+".raw "+filename+"clut.png -clut -type palette BMP3:" +filename+"." + imgfmt
+		cmd = "convert -size "+str(width)+"x"+str(height)+"+"+str(16 + palette_len * 4) +" -depth " + str(depth) + " +antialias -alpha off -compress NONE gray:"+filename+".raw "+filename+"clut.png -clut "
+		if imgfmt == 'bmp':
+		    cmd += " -type palette BMP3:"
+		cmd +=filename+"." + imgfmt
 		print "DEBUG: %s" % cmd
 		os.system(cmd)
 
