@@ -1,5 +1,13 @@
 #!/usr/bin/python
 
+#TODO
+#switch to pil
+#https://stackoverflow.com/questions/29433243/convert-image-to-specific-palette-using-pil-without-dithering
+#list_of_pixels = list(im.getdata())
+# Do something to the pixels...
+#im2 = Image.new(im.mode, im.size)
+#im2.putdata(list_of_pixels)
+
 #https://stackoverflow.com/questions/42381009/convert-arbitrary-bytes-to-any-lossless-common-image-format
 #http://www.imagemagick.org/discourse-server/viewtopic.php?t=31451
 #https://superuser.com/questions/294270/how-to-view-raw-binary-data-as-an-image-with-given-width-and-height
@@ -11,9 +19,10 @@
 
 #http://www.imagemagick.org/discourse-server/viewtopic.php?f=1&t=24193&hilit=clut
 
-imgfmt="png"
+#imgfmt="png"
+imgfmt="bmp"
 
-import sys, struct, os, md5, hashlib, argparse
+import sys, struct, os, md5, hashlib, argparse, time, datetime, subprocess, re
 if len(sys.argv) == 2:
     fileName = sys.argv[1]
 
@@ -36,35 +45,37 @@ args = parser.parse_args()
 
 fileName = args.input
 
+dirName = "_"+fileName
+
 #with open('abc.dat', 'rb') as fobj:
 #    byte_string, n1, n4 = struct.unpack('4sbI', fobj.read(12)) 
 #https://docs.python.org/3/library/struct.html#format-strings
 
-if not os.path.exists("_"+fileName):
-    os.mkdir("_"+fileName)
+if not os.path.exists(dirName):
+    os.mkdir(dirName)
 
 strings_cn = {
-    181: "1",
-    182: "3",
-    183: "2",
-    184: "5",
-    185: "6",
-    186: "Week",
-    187: "4",
+    181: "Mon",
+    182: "Wed",
+    183: "Tue",
+    184: "Fri",
+    185: "Sat",
+    186: "Sun",
+    187: "Thu",
     188: "Day",
 
     #timer menu
     112: "B sync'ed",
-    #360: "Bsync",
+    #360: "B sync'ed",
     113: "x disconn",
-    #361: "xoff",
+    #361: "x disconn",
 
     #Main menu
     294: "Alarm",
     296: "Compass",
     298: "Setup",
     300: "Activity",
-    302: "Status",
+    302: "Home",
     304: "Timer",
     306: "Weather",
 
@@ -91,14 +102,71 @@ def get_rsrc_addr(idx):
 	addr = (buf[0] <<0) + (buf[1] <<8) + (buf[2] << 16) + (buf[3] <<24)
 	return addr
 
-def gen_raw():
+def gen_raw(idx):
 
-	bpp = "identify -format '%[bit-depth]' 200_4.png"
-	bpp = "identify -format '%[width]' 200_4.png"
-	bpp = "identify -format '%[height]' 200_4.png"
+	raw="%s%s%03d.%s" % (dirName , os.path.sep , idx, "raw")
+	img="%s%s%03d.%s" % (dirName , os.path.sep , idx, imgfmt)
 
-	cmd = "convert 000_4.png -depth 8 -format '%c' histogram:info:-"
-	os.system(cmd)
+	#the png has been edited... recreate the new raw and load in memory
+	raw="%s%s%03d.%s" % (dirName , os.path.sep , idx, "raw")
+
+	print "QUI1",raw,os.path.getmtime(raw)
+	print "QUI1",img,os.path.getmtime(img)
+
+	if os.path.getmtime(raw) != os.path.getmtime(img):
+		cmd = "identify -format %%[bit-depth] %s%s%03d.%s" % (dirName, os.path.sep, idx, imgfmt)
+		p = subprocess.Popen(cmd.split(" "), stdout=subprocess.PIPE,
+						   stderr=subprocess.PIPE)
+		depth, err = p.communicate()
+
+		cmd = "identify -format %%[width] %s%s%03d.%s" % (dirName, os.path.sep, idx, imgfmt)
+		p = subprocess.Popen(cmd.split(" "), stdout=subprocess.PIPE,
+						   stderr=subprocess.PIPE)
+		width, err = p.communicate()
+
+		cmd = "identify -format %%[height] %s%s%03d.%s" % (dirName, os.path.sep, idx, imgfmt)
+		p = subprocess.Popen(cmd.split(" "), stdout=subprocess.PIPE,
+						   stderr=subprocess.PIPE)
+		height, err = p.communicate()
+
+		cmd = "convert %s%s%03d.%s -depth %d -format %%c histogram:info:-" %  (dirName, os.path.sep, idx, imgfmt, int(depth))
+		p = subprocess.Popen(cmd.split(" "), stdout=subprocess.PIPE,
+						   stderr=subprocess.PIPE)
+		out, err = p.communicate()
+
+		palette = []
+
+		for line in out.split("\n"):
+			try:
+			    m = re.match(r".+?(\d+)\,\s+(\d+),\s+(\d+)?.+", line)
+			    palette.extend( [ int(m.groups()[0]),int(m.groups()[1]),int(m.groups()[2],0), 0])
+			except:
+			    pass
+		print palette
+
+		FIXME=0x15
+		header_bmp = [ 0x42, 0x4D, 0x64, 0x00, int(width), 0x00, int(height) , 0x00, FIXME, 0x00, int(depth) , 0x00, len(palette) /4, 0 ,0 ,0 ]
+		print header_bmp
+		header_bmp.extend(palette)
+		print header_bmp
+
+		#os.system(cmd)
+		with open(raw, mode='wb') as rawnew:
+			rawnew.write("".join(chr(e) for e in header_bmp))
+			rawnew.close()
+	    
+		filename = dirName+"/001"
+		cmd = "convert -size "+str(width)+"x"+str(height)+"+"+str(16 + len(palette) * 4) +" -depth " + str(depth) + " +antialias -alpha off " +filename+"." + imgfmt + " -compress NONE gray:- >>"+raw
+		print "DEBUG: %s" % cmd
+		os.system(cmd)
+
+	else:
+		print "no changes to user friendly image"
+
+	with open(raw, mode='rb') as rawimg:
+		img = [ord(c) for c in rawimg.read()]
+
+	return img
 
 
 def get_bmp(idx):
@@ -127,7 +195,7 @@ def get_bmp(idx):
 
 	print "idx: %d - depth %d bpp - w: %d - h: %d - ??? %d " % (idx, depth, width, height, unk)
 
-	filename = "_"+fileName +  os.path.sep + "%03d" % (idx)
+	filename = dirName +  os.path.sep + "%03d" % (idx)
 	palette_len = ord(fileContent[start+12:start+13])
 	#print DEBUG: palette_len=%d" % palette_len
 
@@ -144,6 +212,7 @@ def get_bmp(idx):
 		print "translating %d with %s" % (idx, string)
 		cmd = "convert -depth " + str(depth) + "  -alpha off -compress NONE -background black -fill white -font DejaVu-Sans -gravity center -pointsize 9 -size "+str(width)+"x"+str(height)+"  label:\"" + string + "\" " +filename+"." + imgfmt +" 2>/dev/null"
 		os.system(cmd)
+		os.utime(filename+"." + imgfmt, (mtime+5, mtime+5))  # Set access/modified times to now
 	else:
 		palfile = open(filename+".pal","w")
 		for i in range(palette_len):
@@ -163,13 +232,24 @@ def get_bmp(idx):
 		#print "DEBUG: removing "+filename+".pal"
 		os.unlink(filename+".pal")
 
-		cmd = "convert -size "+str(width)+"x"+str(height)+"+"+str(16 + palette_len * 4) +" -depth " + str(depth) + "   -alpha off -compress NONE gray:"+filename+".raw "+filename+"clut.png -clut " +filename+"." + imgfmt
-		#print "DEBUG: %s" % cmd
+		cmd = "convert -size "+str(width)+"x"+str(height)+"+"+str(16 + palette_len * 4) +" -depth " + str(depth) + " +antialias -alpha off -compress NONE gray:"+filename+".raw "+filename+"clut.png -clut -type palette BMP3:" +filename+"." + imgfmt
+		print "DEBUG: %s" % cmd
 		os.system(cmd)
+
 		#print "DEBUG: removing "+filename+".pal"
 		os.unlink(filename+"clut.png")
+		os.utime(filename+"." + imgfmt, (mtime, mtime))  # Set access/modified times to now
+	# set source and target image to same timestamp. 
+	# we will use timestamp reading later
+	try:
+	    #os.utime(fname, None)  # Set access/modified times to now
+	    os.utime(filename+".raw", (mtime, mtime))  # Set access/modified times to now
+	except OSError:
+	    print('File has just been deleted between exists() and utime() calls (or no permission)')
 
+mtime = time.mktime(datetime.datetime.now().timetuple())
 
+#unpack
 with open(fileName, mode='rb') as file: # b is important -> binary
     fileContent = file.read()
     #https://docs.python.org/3/library/struct.html#format-strings
@@ -208,3 +288,22 @@ with open(fileName, mode='rb') as file: # b is important -> binary
 
 
 
+#pack
+header_res = [ 0x48, 0x4D, 0x52, 0x45, 0x53, version , 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF ]
+#extend the array to make space for number of element and resource's index
+header_res.extend([0]*( 4 + 4 * max_rsrc))
+for i in range(4):
+    header_res[0x10 + i] = (max_rsrc >> 8*i) & 0xFF
+
+offset = 0
+for index in range(max_rsrc):
+	for i in range(4):
+	    print (0x14 + index *4 +i), (offset >> 8*i) & 0xFF
+	    header_res[0x14 + index  * 4+i] = (offset >> 8*i) & 0xFF
+	img = gen_raw(index)
+	header_res.extend(img)
+	offset += len(img)
+
+
+with open(fileName+".new", mode='wb') as output:
+    output.write("".join(chr(c) for c in header_res))

@@ -130,7 +130,6 @@ else:
                 if len(string_other) <= len(string_cn) and translation_tuple not in translation_tuples:
                         translation_tuples.append(translation_tuple)
 
-
 #sort the translation array to be sure to patch the short string later as they can be included in longer one
 translation_tuples_s = sorted(translation_tuples, key=lambda string_cn: len(string_cn[0]), reverse=True)
 
@@ -198,7 +197,7 @@ if args.patch:
 	        else:
 		    s_ar[ix+r] = chr(0)
 
-    	    ix += len(find_str.decode("hex")) # +2 because len('ll') == 2
+	    ix += len(find_str.decode("hex")) # +2 because len('ll') == 2
 
 	s="".join(s_ar)
 
