@@ -124,7 +124,7 @@ def gen_raw(idx):
 	#print "QUI1",img,os.path.getmtime(img)
 
 	if os.path.getmtime(raw) != os.path.getmtime(img):
-		cmd = "identify -format %%[bit-depth] %s%s%03d.%s" % (dirName, os.path.sep, idx, imgfmt)
+		cmd = "identify -format %%[depth] %s%s%03d.%s" % (dirName, os.path.sep, idx, imgfmt)
 		p = subprocess.Popen(cmd.split(" "), stdout=subprocess.PIPE,
 						   stderr=subprocess.PIPE)
 		depth, err = p.communicate()
