@@ -68,9 +68,9 @@ if args.auto_translate:
 	for item in for_translation:
 		line_header=""
 
-		addrs_ar, string_hex, string_cn, _, _ = item
+		addrs_ar, string_hex, string_cn, string_other, _ = item
 		if _ and inputTxtFileName == outputTxtFileName:
-	    		string_translated=_
+	    		string_translated=string_other
 		else:
 	    		string_translated=translator.translate(string_cn, dest=args.language).text
 
