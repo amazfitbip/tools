@@ -70,9 +70,9 @@ strings_cn = {
     183: "Tue",
     184: "Fri",
     185: "Sat",
-    186: "Sun",
+    186: "Day", #"Sun",
     187: "Thu",
-    188: "Day",
+    188: "Sun", #"Dau",
 
     #timer menu
     112: "B sync'ed",
