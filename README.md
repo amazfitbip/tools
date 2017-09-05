@@ -8,7 +8,8 @@ This is a suite of tools to make easier to translate and tweak Amazfit bip (A160
 Usually each tool have its -h flag that allow you to understand better how it works.
 
 
-== res2img.py
+res2img.py
+----------
 
 small tool to convert amazfit bip resource file to a standard image file.
 
