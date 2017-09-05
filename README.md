@@ -35,7 +35,8 @@ The program generate some temporary file like a textual palette and a mask to be
 Requirements:  
 convert command from imagemagick suite
 
-== zh-cn2en.py
+zh-cn2en.py
+----------
 
 ./zh-cn2en.py [-h] [-l en] [-p]
 
@@ -46,12 +47,14 @@ Requirements:
 https://github.com/ssut/py-googletrans.git
 
 
-== zh-check_translation.py
+zh-check_translation.py
+----------
 
 It can help you check the translation (the length of translated strings must be less than or equal to the length of the chinese strings). It prints the line number where the problem occurred
 
 
-== zh-merge_old2new_trans.py
+zh-merge_old2new_trans.py
+----------
 
 If there will be a new zh-cn2(lang).txt file from next firmware upgrades, the tool can be used to merge your translations from the old "zh" file to the new one
 
