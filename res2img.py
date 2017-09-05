@@ -265,7 +265,9 @@ mtime = time.mktime(datetime.datetime.now().timetuple())
 with open(fileName, mode='rb') as file: # b is important -> binary
 	fileContent = file.read()
 	#https://docs.python.org/3/library/struct.html#format-strings
-	fileHeader, version, dummy1, dummmy2 = struct.unpack('5sbHL', fileContent[0:16]) 
+	fileHeader = fileContent[0:5]
+	version = ord(fileContent[6:7])
+
 	if fileHeader != "HMRES":
 	    print "file isn't a resource file. Exiting"
 	    os.exit(1)
