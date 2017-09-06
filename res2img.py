@@ -232,7 +232,7 @@ def get_bmp(idx):
 		    g=ord(fileContent[start+16+ ( 4*i+1):start+16+ ( 4*i+2)])
 		    b=ord(fileContent[start+16+ ( 4*i+2):start+16+ ( 4*i+3)])
 		    a=ord(fileContent[start+16+ ( 4*i+3):start+16+ ( 4*i+4)])
-		    #print "DEBUG: rgb(%d,%d,%d)" %(r,g,b)
+		    #print "DEBUG: palette rgb(%3x,%3x,%3x)" %(r,g,b)
 		    if a != 0:
 			print "DEBUG: alpha(%d)" %a
 		    palette.append( [ r,g,b, 0])
@@ -241,6 +241,7 @@ def get_bmp(idx):
 		p = subprocess.Popen(cmd.split(" "), stdout=subprocess.PIPE,
 						   stderr=subprocess.PIPE)
 		out, err = p.communicate()
+		#print cmd
 
 		colormap = []
 		for line in out.split("\n"):
@@ -248,24 +249,57 @@ def get_bmp(idx):
 			    #print "colormap=",line
 			    m = re.match(r".+?(\d+)\,\s*(\d+),\s*(\d+)?.+", line)
 			    colormap.append( [ int(m.groups()[0]),int(m.groups()[1]),int(m.groups()[2],0), 0])
+			    #print "DEBUG: colormap rgb(%3x,%3x,%3x)" %(int(m.groups()[0]),int(m.groups()[1]),int(m.groups()[2],0))
 			except:
 			    pass
 		#print "idx =" + str(idx)+" colormap=",colormap
-		print "DEBUG: colormap_len=%d" % len(colormap)
+		#print "DEBUG: colormap_len=%d" % len(colormap)
 
-		cmd = "convert -verbose -alpha off "
+		#tmpA = mapcolor.mpc
+		cmd = "convert -quiet  -size %dx%d+%d -depth %d +antialias -compress NONE gray:%s.raw +repage %s.mpc" % (width,height,16 + palette_len * 4,depth,filename, filename)
+		#print cmd
+		os.system(cmd)
+		#ww=`convert $tmpA -ping -format "%w" info:`
+		#hh=`convert $tmpA -ping -format "%h" info:`
+		cmd = "convert -size %dx%d xc:none %s.miff" % (width,height,filename)
+		#print cmd
+		os.system(cmd)
+
+		#cmd = "convert -verbose -channel rgba -alpha on "
 		for i in range(palette_len):
 		    try:
-			cmd += " -fill rgb\(%d,%d,%d\) -opaque rgb\(%d,%d,%d\)" % (palette[i][0],palette[i][1],palette[i][2], colormap[i][0],colormap[i][1],colormap[i][2], )
+		#	print "convert '(' ./mapcolors_22153.mpc -channel rgba -alpha on -fill none +opaque 'rgb(0,0,0)' -fill 'rgb(255,255,255)' -opaque 'rgb(0,0,0)' ')' ./mapcolors_0_22153.miff -composite ./mapcolors_0_22153.miff"
+			cmd2 = "convert \( %s.mpc -channel rgba -alpha on -fill none +opaque %s -fill %s -opaque %s \) %s.miff -composite %s.miff" %(filename, 
+			    "rgb\(%d,%d,%d\)" % (colormap[i][0],colormap[i][1],colormap[i][2]),
+			    "rgb\(%d,%d,%d\)" % (palette[i][0],palette[i][1],palette[i][2]),
+			    "rgb\(%d,%d,%d\)" % (colormap[i][0],colormap[i][1],colormap[i][2]), filename,filename)
+			#print "DEBUG: %s" % cmd2
+			os.system(cmd2)
+		#	cmd += " -fill rgb\(%d,%d,%d\) -opaque rgb\(%d,%d,%d\)" % (palette[i][0],palette[i][1],palette[i][2], colormap[i][0],colormap[i][1],colormap[i][2], )
+			#convert \( $tmpA -channel rgba -alpha on \
+			#-fill none +opaque "$color1" \
+			#-fill "$color2" -opaque "$color1" \) $tmp0 \
+			#-composite $tmp0
 		    except:
 			pass
 
-		cmd += " -size "+str(width)+"x"+str(height)+"+"+str(16 + palette_len * 4) +" -depth " + str(depth) + " +antialias -compress NONE gray:"+filename+".raw "
+		#cmd += " -size "+str(width)+"x"+str(height)+"+"+str(16 + palette_len * 4) +" -depth " + str(depth) + " +antialias -compress NONE gray:"+filename+".raw "
+		#if imgfmt == 'bmp':
+		#    cmd += " -type palette BMP3:"
+		#cmd +=filename+"." + imgfmt
+		#print "DEBUG: %s" % cmd
+		#os.system(cmd)
+
+		cmd2 = "convert %s.mpc %s.miff -composite $bitdepth $transparent $otype" %(filename,filename)
 		if imgfmt == 'bmp':
-		    cmd += " -type palette BMP3:"
-		cmd +=filename+"." + imgfmt
-		print "DEBUG: %s" % cmd
-		os.system(cmd)
+		    cmd2 += " -type palette BMP3:"
+		cmd2 +=filename+"." + imgfmt
+		#print "DEBUG: %s" % cmd2
+		os.system(cmd2)
+
+		os.unlink(filename+".cache")
+		os.unlink(filename+".miff")
+		os.unlink(filename+".mpc")
 
 		os.utime(filename+"." + imgfmt, (mtime, mtime))  # Set access/modified times to now
 	# set source and target image to same timestamp. 
@@ -319,7 +353,7 @@ if args.unpack:
 	    get_bmp(index)
 
 	#just for me... uncomment to extract just an image
-	#get_bmp(1)
+	#get_bmp(13)
 
 #pack
 if args.pack:
