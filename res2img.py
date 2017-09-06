@@ -207,7 +207,7 @@ def get_bmp(idx):
 
 	filename = dirName +  os.path.sep + "%03d" % (idx)
 	palette_len = ord(fileContent[start+12:start+13])
-	#print DEBUG: palette_len=%d" % palette_len
+	print "DEBUG: palette_len=%d" % palette_len
 
 	newFile = open(filename+".raw", "wb")
 	# write to file
@@ -224,7 +224,8 @@ def get_bmp(idx):
 		os.system(cmd)
 		os.utime(filename+"." + imgfmt, (mtime+60, mtime+60))  # Set access/modified times in the future 
 	else:
-		palfile = open(filename+".pal","w")
+		
+		palette = []
 		for i in range(palette_len):
 		    #print "i: %x" %(16 + i)
 		    r=ord(fileContent[start+16+ ( 4*i+0):start+16+ ( 4*i+1)])
@@ -234,23 +235,38 @@ def get_bmp(idx):
 		    #print "DEBUG: rgb(%d,%d,%d)" %(r,g,b)
 		    if a != 0:
 			print "DEBUG: alpha(%d)" %a
-		    palfile.write("xc:rgb(%d,%d,%d)\n" % ( r,g,b))
-		palfile.close()
-		cmd="convert @"+filename+".pal +append "+filename+"clut.png"
-		#print "DEBUG: %s" % cmd
-		os.system(cmd)
-		#print "DEBUG: removing "+filename+".pal"
-		os.unlink(filename+".pal")
+		    palette.append( [ r,g,b, 0])
 
-		cmd = "convert -size "+str(width)+"x"+str(height)+"+"+str(16 + palette_len * 4) +" -depth " + str(depth) + " +antialias -alpha off -compress NONE gray:"+filename+".raw "+filename+"clut.png -clut "
+		cmd = "convert -alpha off +antialias -compress NONE -size "+str(width)+"x"+str(height)+"+"+str(16 + palette_len * 4)+" -depth %d gray:%s%s%03d.%s -format %%c histogram:info:-" %  (int(depth), dirName, os.path.sep, idx, "raw" )
+		p = subprocess.Popen(cmd.split(" "), stdout=subprocess.PIPE,
+						   stderr=subprocess.PIPE)
+		out, err = p.communicate()
+
+		colormap = []
+		for line in out.split("\n"):
+			try:
+			    #print "colormap=",line
+			    m = re.match(r".+?(\d+)\,\s*(\d+),\s*(\d+)?.+", line)
+			    colormap.append( [ int(m.groups()[0]),int(m.groups()[1]),int(m.groups()[2],0), 0])
+			except:
+			    pass
+		#print "idx =" + str(idx)+" colormap=",colormap
+		print "DEBUG: colormap_len=%d" % len(colormap)
+
+		cmd = "convert -verbose -alpha off "
+		for i in range(palette_len):
+		    try:
+			cmd += " -fill rgb\(%d,%d,%d\) -opaque rgb\(%d,%d,%d\)" % (palette[i][0],palette[i][1],palette[i][2], colormap[i][0],colormap[i][1],colormap[i][2], )
+		    except:
+			pass
+
+		cmd += " -size "+str(width)+"x"+str(height)+"+"+str(16 + palette_len * 4) +" -depth " + str(depth) + " +antialias -compress NONE gray:"+filename+".raw "
 		if imgfmt == 'bmp':
 		    cmd += " -type palette BMP3:"
 		cmd +=filename+"." + imgfmt
 		print "DEBUG: %s" % cmd
 		os.system(cmd)
 
-		#print "DEBUG: removing "+filename+".pal"
-		os.unlink(filename+"clut.png")
 		os.utime(filename+"." + imgfmt, (mtime, mtime))  # Set access/modified times to now
 	# set source and target image to same timestamp. 
 	# we will use timestamp reading later
@@ -298,7 +314,12 @@ if args.unpack:
 
 	    #sys.stdout.write('.')
 	    #sys.stdout.flush()
+
+	#just for me... comment out to extract all
 	    get_bmp(index)
+
+	#just for me... uncomment to extract just an image
+	#get_bmp(1)
 
 #pack
 if args.pack:
