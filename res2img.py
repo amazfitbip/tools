@@ -70,9 +70,9 @@ strings_cn = {
     183: "Tue",
     184: "Fri",
     185: "Sat",
-    186: "Sun",
+    186: "Day", #"Sun",
     187: "Thu",
-    188: "Day",
+    188: "Sun", #"Dau",
 
     #timer menu
     112: "B sync'ed",
@@ -207,7 +207,7 @@ def get_bmp(idx):
 
 	filename = dirName +  os.path.sep + "%03d" % (idx)
 	palette_len = ord(fileContent[start+12:start+13])
-	#print DEBUG: palette_len=%d" % palette_len
+	print "DEBUG: palette_len=%d" % palette_len
 
 	newFile = open(filename+".raw", "wb")
 	# write to file
@@ -224,33 +224,83 @@ def get_bmp(idx):
 		os.system(cmd)
 		os.utime(filename+"." + imgfmt, (mtime+60, mtime+60))  # Set access/modified times in the future 
 	else:
-		palfile = open(filename+".pal","w")
+		
+		palette = []
 		for i in range(palette_len):
 		    #print "i: %x" %(16 + i)
 		    r=ord(fileContent[start+16+ ( 4*i+0):start+16+ ( 4*i+1)])
 		    g=ord(fileContent[start+16+ ( 4*i+1):start+16+ ( 4*i+2)])
 		    b=ord(fileContent[start+16+ ( 4*i+2):start+16+ ( 4*i+3)])
 		    a=ord(fileContent[start+16+ ( 4*i+3):start+16+ ( 4*i+4)])
-		    #print "DEBUG: rgb(%d,%d,%d)" %(r,g,b)
+		    #print "DEBUG: palette rgb(%3x,%3x,%3x)" %(r,g,b)
 		    if a != 0:
 			print "DEBUG: alpha(%d)" %a
-		    palfile.write("xc:rgb(%d,%d,%d)\n" % ( r,g,b))
-		palfile.close()
-		cmd="convert @"+filename+".pal +append "+filename+"clut.png"
+		    palette.append( [ r,g,b, 0])
+
+		cmd = "convert -alpha off +antialias -compress NONE -size "+str(width)+"x"+str(height)+"+"+str(16 + palette_len * 4)+" -depth %d gray:%s%s%03d.%s -format %%c histogram:info:-" %  (int(depth), dirName, os.path.sep, idx, "raw" )
+		p = subprocess.Popen(cmd.split(" "), stdout=subprocess.PIPE,
+						   stderr=subprocess.PIPE)
+		out, err = p.communicate()
+		#print cmd
+
+		colormap = []
+		for line in out.split("\n"):
+			try:
+			    #print "colormap=",line
+			    m = re.match(r".+?(\d+)\,\s*(\d+),\s*(\d+)?.+", line)
+			    colormap.append( [ int(m.groups()[0]),int(m.groups()[1]),int(m.groups()[2],0), 0])
+			    #print "DEBUG: colormap rgb(%3x,%3x,%3x)" %(int(m.groups()[0]),int(m.groups()[1]),int(m.groups()[2],0))
+			except:
+			    pass
+		#print "idx =" + str(idx)+" colormap=",colormap
+		#print "DEBUG: colormap_len=%d" % len(colormap)
+
+		#tmpA = mapcolor.mpc
+		cmd = "convert -quiet  -size %dx%d+%d -depth %d +antialias -compress NONE gray:%s.raw +repage %s.mpc" % (width,height,16 + palette_len * 4,depth,filename, filename)
+		#print cmd
+		os.system(cmd)
+		#ww=`convert $tmpA -ping -format "%w" info:`
+		#hh=`convert $tmpA -ping -format "%h" info:`
+		cmd = "convert -size %dx%d xc:none %s.miff" % (width,height,filename)
+		#print cmd
+		os.system(cmd)
+
+		#cmd = "convert -verbose -channel rgba -alpha on "
+		for i in range(palette_len):
+		    try:
+		#	print "convert '(' ./mapcolors_22153.mpc -channel rgba -alpha on -fill none +opaque 'rgb(0,0,0)' -fill 'rgb(255,255,255)' -opaque 'rgb(0,0,0)' ')' ./mapcolors_0_22153.miff -composite ./mapcolors_0_22153.miff"
+			cmd2 = "convert \( %s.mpc -channel rgba -alpha on -fill none +opaque %s -fill %s -opaque %s \) %s.miff -composite %s.miff" %(filename, 
+			    "rgb\(%d,%d,%d\)" % (colormap[i][0],colormap[i][1],colormap[i][2]),
+			    "rgb\(%d,%d,%d\)" % (palette[i][0],palette[i][1],palette[i][2]),
+			    "rgb\(%d,%d,%d\)" % (colormap[i][0],colormap[i][1],colormap[i][2]), filename,filename)
+			#print "DEBUG: %s" % cmd2
+			os.system(cmd2)
+		#	cmd += " -fill rgb\(%d,%d,%d\) -opaque rgb\(%d,%d,%d\)" % (palette[i][0],palette[i][1],palette[i][2], colormap[i][0],colormap[i][1],colormap[i][2], )
+			#convert \( $tmpA -channel rgba -alpha on \
+			#-fill none +opaque "$color1" \
+			#-fill "$color2" -opaque "$color1" \) $tmp0 \
+			#-composite $tmp0
+		    except:
+			pass
+
+		#cmd += " -size "+str(width)+"x"+str(height)+"+"+str(16 + palette_len * 4) +" -depth " + str(depth) + " +antialias -compress NONE gray:"+filename+".raw "
+		#if imgfmt == 'bmp':
+		#    cmd += " -type palette BMP3:"
+		#cmd +=filename+"." + imgfmt
 		#print "DEBUG: %s" % cmd
-		os.system(cmd)
-		#print "DEBUG: removing "+filename+".pal"
-		os.unlink(filename+".pal")
+		#os.system(cmd)
 
-		cmd = "convert -size "+str(width)+"x"+str(height)+"+"+str(16 + palette_len * 4) +" -depth " + str(depth) + " +antialias -alpha off -compress NONE gray:"+filename+".raw "+filename+"clut.png -clut "
+		cmd2 = "convert %s.mpc %s.miff -composite $bitdepth $transparent $otype" %(filename,filename)
 		if imgfmt == 'bmp':
-		    cmd += " -type palette BMP3:"
-		cmd +=filename+"." + imgfmt
-		print "DEBUG: %s" % cmd
-		os.system(cmd)
+		    cmd2 += " -type palette BMP3:"
+		cmd2 +=filename+"." + imgfmt
+		#print "DEBUG: %s" % cmd2
+		os.system(cmd2)
 
-		#print "DEBUG: removing "+filename+".pal"
-		os.unlink(filename+"clut.png")
+		os.unlink(filename+".cache")
+		os.unlink(filename+".miff")
+		os.unlink(filename+".mpc")
+
 		os.utime(filename+"." + imgfmt, (mtime, mtime))  # Set access/modified times to now
 	# set source and target image to same timestamp. 
 	# we will use timestamp reading later
@@ -265,7 +315,9 @@ mtime = time.mktime(datetime.datetime.now().timetuple())
 with open(fileName, mode='rb') as file: # b is important -> binary
 	fileContent = file.read()
 	#https://docs.python.org/3/library/struct.html#format-strings
-	fileHeader, version, dummy1, dummmy2 = struct.unpack('5sbHL', fileContent[0:16]) 
+	fileHeader = fileContent[0:5]
+	version = ord(fileContent[6:7])
+
 	if fileHeader != "HMRES":
 	    print "file isn't a resource file. Exiting"
 	    os.exit(1)
@@ -296,7 +348,12 @@ if args.unpack:
 
 	    #sys.stdout.write('.')
 	    #sys.stdout.flush()
+
+	#just for me... comment out to extract all
 	    get_bmp(index)
+
+	#just for me... uncomment to extract just an image
+	#get_bmp(13)
 
 #pack
 if args.pack:
