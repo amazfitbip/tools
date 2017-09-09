@@ -155,8 +155,10 @@ def gen_raw(idx):
 			    pass
 		#print "idx =" + str(idx)+" PALETTE=",palette
 
+		transparency = 0
+
 		stride=int(int(width) * int(depth) / 8) + ((int(width) * int(depth) )% 8 > 0)
-		header_bmp = [ 0x42, 0x4D, 0x64, 0x00, int(width), 0x00, int(height) , 0x00, stride, 0x00, int(depth) , 0x00, len(palette) /4, 0 ,0 ,0 ]
+		header_bmp = [ 0x42, 0x4D, 0x64, 0x00, int(width), 0x00, int(height) , 0x00, stride, 0x00, int(depth) , 0x00, len(palette) /4, 0 ,transparency ,0 ]
 		#print header_bmp
 		header_bmp.extend(palette)
 		#print header_bmp
@@ -352,10 +354,10 @@ if args.unpack:
 	    #sys.stdout.flush()
 
 	#just for me... comment out to extract all
-	#    get_bmp(index)
+	    get_bmp(index)
 
 	#just for me... uncomment to extract just an image
-	get_bmp(66)
+	#get_bmp(66)
 
 #pack
 if args.pack:
