@@ -290,6 +290,8 @@ def get_bmp(idx):
 		#os.system(cmd)
 
 		cmd2 = "convert %s.mpc %s.miff -composite -depth %d " %(filename,filename, depth)
+		if transparency == 1:
+		    cmd2 += "-transparent rgb\(%d,%d,%d\) " % (palette[0][0],palette[0][1],palette[0][2])
 
 		if imgfmt == 'bmp':
 		    cmd2 += " -type palette BMP3:"
