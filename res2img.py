@@ -195,18 +195,16 @@ def get_bmp(idx):
 	m.update(fileContent[start:end])
 	#filename = "%03d_%s_%s.bmp" % (idx, m.hexdigest(), ver)
 
-	#I don't know yet what is this bit
-	unk = ord(fileContent[start+8:start+9])
-
 	width = ord(fileContent[start+4:start+5])
 	height = ord(fileContent[start+6:start+7])
-
+	stride = ord(fileContent[start+8:start+9])
 	depth = ord(fileContent[start+0xa:start+0xb])
+	palette_len = ord(fileContent[start+0xc:start+0xd])
+	transparency = ord(fileContent[start+0xe:start+0xf])
 
-	print "idx: %d - depth %d bpp - w: %d - h: %d - ??? %d " % (idx, depth, width, height, unk)
+	print "idx: %3d - depth %2d bpp - w: %3d - h: %3d - stride %d - transparency %d" % (idx, depth, width, height, stride, transparency)
 
 	filename = dirName +  os.path.sep + "%03d" % (idx)
-	palette_len = ord(fileContent[start+12:start+13])
 	print "DEBUG: palette_len=%d" % palette_len
 
 	newFile = open(filename+".raw", "wb")
@@ -256,7 +254,7 @@ def get_bmp(idx):
 		#print "DEBUG: colormap_len=%d" % len(colormap)
 
 		#tmpA = mapcolor.mpc
-		cmd = "convert -quiet  -size %dx%d+%d -depth %d +antialias -compress NONE gray:%s.raw +repage %s.mpc" % (width,height,16 + palette_len * 4,depth,filename, filename)
+		cmd = "convert -quiet -size %dx%d+%d -depth %d +antialias -compress NONE gray:%s.raw +repage %s.mpc" % (width,height,16 + palette_len * 4,depth,filename, filename)
 		#print cmd
 		os.system(cmd)
 		#ww=`convert $tmpA -ping -format "%w" info:`
@@ -280,7 +278,8 @@ def get_bmp(idx):
 			#-fill none +opaque "$color1" \
 			#-fill "$color2" -opaque "$color1" \) $tmp0 \
 			#-composite $tmp0
-		    except:
+		    except Exception as e:
+			print(e)
 			pass
 
 		#cmd += " -size "+str(width)+"x"+str(height)+"+"+str(16 + palette_len * 4) +" -depth " + str(depth) + " +antialias -compress NONE gray:"+filename+".raw "
@@ -290,7 +289,8 @@ def get_bmp(idx):
 		#print "DEBUG: %s" % cmd
 		#os.system(cmd)
 
-		cmd2 = "convert %s.mpc %s.miff -composite $bitdepth $transparent $otype" %(filename,filename)
+		cmd2 = "convert %s.mpc %s.miff -composite -depth %d " %(filename,filename, depth)
+
 		if imgfmt == 'bmp':
 		    cmd2 += " -type palette BMP3:"
 		cmd2 +=filename+"." + imgfmt
@@ -350,10 +350,10 @@ if args.unpack:
 	    #sys.stdout.flush()
 
 	#just for me... comment out to extract all
-	    get_bmp(index)
+	#    get_bmp(index)
 
 	#just for me... uncomment to extract just an image
-	#get_bmp(13)
+	get_bmp(66)
 
 #pack
 if args.pack:
