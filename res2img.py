@@ -146,20 +146,25 @@ def gen_raw(idx):
 
 		palette = []
 
+		transparency=0
 		for line in out.split("\n"):
 			try:
-			    #print "PALETTE=",line
-			    m = re.match(r".+?(\d+)\,\s*(\d+),\s*(\d+)?.+", line)
+			    print "PALETTE=",line
+			    m = re.match(r".+?(\d+)\,\s*(\d+),\s*(\d+),*\s*(\d*).+", line)
 			    palette.extend( [ int(m.groups()[0]),int(m.groups()[1]),int(m.groups()[2],0), 0])
-			except:
-			    pass
+			    if m.groups()[3] == "0":
+				transparency=1
+			except Exception as e:
+			    print e
 		#print "idx =" + str(idx)+" PALETTE=",palette
 
-		transparency = 0
+		if transparency == 1:
+		    stride=int(int(width) * int(depth) / 64) + ((int(width) * int(depth) )% 64 > 0)
+		else:
+		    stride=int(int(width) * int(depth) / 8) + ((int(width) * int(depth) )% 8 > 0)
 
-		stride=int(int(width) * int(depth) / 8) + ((int(width) * int(depth) )% 8 > 0)
 		header_bmp = [ 0x42, 0x4D, 0x64, 0x00, int(width), 0x00, int(height) , 0x00, stride, 0x00, int(depth) , 0x00, len(palette) /4, 0 ,transparency ,0 ]
-		#print header_bmp
+		#print ["%2x" % c for c in header_bmp]
 		header_bmp.extend(palette)
 		#print header_bmp
 
@@ -204,10 +209,10 @@ def get_bmp(idx):
 	palette_len = ord(fileContent[start+0xc:start+0xd])
 	transparency = ord(fileContent[start+0xe:start+0xf])
 
-	print "idx: %3d - depth %2d bpp - w: %3d - h: %3d - stride %d - transparency %d" % (idx, depth, width, height, stride, transparency)
+	print "idx: %3d - depth %2d bpp - w: %3d - h: %3d - stride %3d - transparency %d" % (idx, depth, width, height, stride, transparency)
 
 	filename = dirName +  os.path.sep + "%03d" % (idx)
-	print "DEBUG: palette_len=%d" % palette_len
+	#print "DEBUG: palette_len=%d" % palette_len
 
 	newFile = open(filename+".raw", "wb")
 	# write to file
