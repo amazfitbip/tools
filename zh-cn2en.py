@@ -59,18 +59,18 @@ with open(inputTxtFileName, mode='r') as file:
 	    string_hex=" ".join(c for c in string_hex.split())
 	    string_cn="".join(c for c in string_hex.split()).decode("hex")
 	if len(string_en) == 0:
-	    string_en=None
+	    string_en=''
 
-	for_translation.append((addrs_ar, string_hex, string_cn, string_en))
+	for_translation.append((addrs_ar, string_hex, string_cn, string_en, addrs_s))
 
 if args.auto_translate:
 	out_lines = []
 	for item in for_translation:
 		line_header=""
 
-		addrs_ar, string_hex, string_cn, _ = item
+		addrs_ar, string_hex, string_cn, string_other, _ = item
 		if _ and inputTxtFileName == outputTxtFileName:
-	    		string_translated=_
+	    		string_translated=string_other
 		else:
 	    		string_translated=translator.translate(string_cn, dest=args.language).text
 
@@ -97,10 +97,11 @@ elif args.manual_translate:
 	cnt = 1
 	man_translated = []
 	for item in for_translation:
-		addrs_ar, string_hex, string_cn, string_other = item
+		addrs_ar, string_hex, string_cn, string_other, addrs_s = item
+
 		while True:
 			print '%d/%d: CN: %s (%d), From file: %s (%d): ' % (cnt, len(for_translation), string_cn, len(string_cn), string_other, len(string_other))
-			print '%s%s' % (''.join([' ']*(len(item[3])-1)), 'v - STOP HERE (max len - %s)' % len(string_cn))
+			print '%s%s' % (''.join([' ']*(len(item[2])-1)), 'v - STOP HERE (max len - %s)' % len(string_cn))
 			translation = raw_input()
 			if len(translation) > len(string_cn):
 				print "Translation lenght is greather than CN string (%d) > (%d). Try it again: " % (len(translation), len(string_cn))
@@ -114,17 +115,15 @@ elif args.manual_translate:
 	# after tranlation, we save the file
 	with open(outputTxtFileName, 'w') as file:
 		file.write("#%s:%s\n" % (string_fw, safe_address))
-		translation_tuples_s = line
 		for item in man_translated:
-			line = "%s|%s|%s|%s\n" % item
-			file.write("%s|%s|%s|%s\n" % item)
+			file.write("%s|%s|%s|%s\n" % (item[4], item[1], item[2], item[3]))
 			# rewrite translation tuples
-			translation_tuples.append((item[2], item[4], item[1]))
+			translation_tuples.append((item[1], item[3], item[0]))
 		print "Translation saved to '%s'. You can use it for patch firmware (-p -i %s)" % (outputTxtFileName, outputTxtFileName)
 
 else:
 	for item in for_translation:
-                addrs_ar, string_hex, string_cn, string_other = item
+                addrs_ar, string_hex, string_cn, string_other, _ = item
 
                 translation_tuple = tuple( [string_hex, string_other,addrs_ar])
                 if len(string_other) <= len(string_cn) and translation_tuple not in translation_tuples:
