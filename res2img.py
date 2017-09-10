@@ -32,7 +32,7 @@ parser.add_argument('-l', '--language', dest='language', default="en", #choices=
 parser.add_argument('-i', '--input', type=str, dest='input', help='input name of resource file (default:%(default)s)', default='Mili_chaohu.res')
 parser.add_argument('-a', '--auto_translate', action='store_true', dest='translate', help='auto translate resource file using known dict')
 
-parser.add_argument('-f', '--format', type=str, dest='imgfmt', help='format of img to generate', default='bmp')
+parser.add_argument('-f', '--format', type=str, dest='imgfmt', help='format of img to generate', choices=["png","bmp"], default='png')
 
 parser.add_argument('-u', dest='unpack', action='store_true', help='unrepack the res file')
 parser.add_argument('-p', dest='pack', action='store_true', help='repack the res file')
@@ -124,7 +124,10 @@ def gen_raw(idx):
 	#print "QUI1",img,os.path.getmtime(img)
 
 	if os.path.getmtime(raw) != os.path.getmtime(img):
-		cmd = "identify -format %%[depth] %s%s%03d.%s" % (dirName, os.path.sep, idx, imgfmt)
+		if args.imgfmt == "bmp":
+		    cmd = "identify -format %%[bit-depth] %s%s%03d.%s" % (dirName, os.path.sep, idx, imgfmt)
+		else:
+		    cmd = "identify -format %%[png:IHDR.bit_depth] %s%s%03d.%s" % (dirName, os.path.sep, idx, imgfmt)
 		p = subprocess.Popen(cmd.split(" "), stdout=subprocess.PIPE,
 						   stderr=subprocess.PIPE)
 		depth, err = p.communicate()
@@ -146,18 +149,25 @@ def gen_raw(idx):
 
 		palette = []
 
+		transparency=0
 		for line in out.split("\n"):
 			try:
-			    #print "PALETTE=",line
-			    m = re.match(r".+?(\d+)\,\s*(\d+),\s*(\d+)?.+", line)
+			    print "PALETTE=",line
+			    m = re.match(r".+?(\d+)\,\s*(\d+),\s*(\d+),*\s*(\d*).+", line)
 			    palette.extend( [ int(m.groups()[0]),int(m.groups()[1]),int(m.groups()[2],0), 0])
-			except:
+			    if m.groups()[3] == "0":
+				transparency=1
+			except Exception as e:
+			    #print e
 			    pass
 		#print "idx =" + str(idx)+" PALETTE=",palette
 
+		#if transparency == 1:
+		#    depth=str(int(depth)/8)
 		stride=int(int(width) * int(depth) / 8) + ((int(width) * int(depth) )% 8 > 0)
-		header_bmp = [ 0x42, 0x4D, 0x64, 0x00, int(width), 0x00, int(height) , 0x00, stride, 0x00, int(depth) , 0x00, len(palette) /4, 0 ,0 ,0 ]
-		#print header_bmp
+
+		header_bmp = [ 0x42, 0x4D, 0x64, 0x00, int(width), 0x00, int(height) , 0x00, stride, 0x00, int(depth) , 0x00, len(palette) /4, 0 ,transparency ,0 ]
+		#print ["%2x" % c for c in header_bmp]
 		header_bmp.extend(palette)
 		#print header_bmp
 
@@ -195,19 +205,17 @@ def get_bmp(idx):
 	m.update(fileContent[start:end])
 	#filename = "%03d_%s_%s.bmp" % (idx, m.hexdigest(), ver)
 
-	#I don't know yet what is this bit
-	unk = ord(fileContent[start+8:start+9])
-
 	width = ord(fileContent[start+4:start+5])
 	height = ord(fileContent[start+6:start+7])
-
+	stride = ord(fileContent[start+8:start+9])
 	depth = ord(fileContent[start+0xa:start+0xb])
+	palette_len = ord(fileContent[start+0xc:start+0xd])
+	transparency = ord(fileContent[start+0xe:start+0xf])
 
-	print "idx: %d - depth %d bpp - w: %d - h: %d - ??? %d " % (idx, depth, width, height, unk)
+	print "idx: %3d - depth %2d bpp - w: %3d - h: %3d - stride %3d - transparency %d" % (idx, depth, width, height, stride, transparency)
 
 	filename = dirName +  os.path.sep + "%03d" % (idx)
-	palette_len = ord(fileContent[start+12:start+13])
-	print "DEBUG: palette_len=%d" % palette_len
+	#print "DEBUG: palette_len=%d" % palette_len
 
 	newFile = open(filename+".raw", "wb")
 	# write to file
@@ -256,13 +264,13 @@ def get_bmp(idx):
 		#print "DEBUG: colormap_len=%d" % len(colormap)
 
 		#tmpA = mapcolor.mpc
-		cmd = "convert -quiet  -size %dx%d+%d -depth %d +antialias -compress NONE gray:%s.raw +repage %s.mpc" % (width,height,16 + palette_len * 4,depth,filename, filename)
-		#print cmd
+		cmd = "convert -quiet -size %dx%d+%d -depth %d +antialias -compress NONE gray:%s.raw +repage %s.mpc" % (width,height,16 + palette_len * 4,depth,filename, filename)
+		#print "DEBUG:", cmd
 		os.system(cmd)
 		#ww=`convert $tmpA -ping -format "%w" info:`
 		#hh=`convert $tmpA -ping -format "%h" info:`
 		cmd = "convert -size %dx%d xc:none %s.miff" % (width,height,filename)
-		#print cmd
+		#print "DEBUG:", cmd
 		os.system(cmd)
 
 		#cmd = "convert -verbose -channel rgba -alpha on "
@@ -280,7 +288,8 @@ def get_bmp(idx):
 			#-fill none +opaque "$color1" \
 			#-fill "$color2" -opaque "$color1" \) $tmp0 \
 			#-composite $tmp0
-		    except:
+		    except Exception as e:
+			#print e
 			pass
 
 		#cmd += " -size "+str(width)+"x"+str(height)+"+"+str(16 + palette_len * 4) +" -depth " + str(depth) + " +antialias -compress NONE gray:"+filename+".raw "
@@ -290,7 +299,10 @@ def get_bmp(idx):
 		#print "DEBUG: %s" % cmd
 		#os.system(cmd)
 
-		cmd2 = "convert %s.mpc %s.miff -composite $bitdepth $transparent $otype" %(filename,filename)
+		cmd2 = "convert %s.mpc %s.miff -composite -depth %d " %(filename,filename, depth)
+		if transparency == 1:
+		    cmd2 += "-transparent rgb\(%d,%d,%d\) " % (palette[0][0],palette[0][1],palette[0][2])
+
 		if imgfmt == 'bmp':
 		    cmd2 += " -type palette BMP3:"
 		cmd2 +=filename+"." + imgfmt
@@ -322,7 +334,7 @@ with open(fileName, mode='rb') as file: # b is important -> binary
 	    print "file isn't a resource file. Exiting"
 	    os.exit(1)
 	print "file is a Haumi resource file"
-	print "version??? %d" % version
+	print "version %d" % version
 
 	buf = [ ord(elem) for elem in fileContent[0x10:0x10+4]]
 	max_rsrc = (buf[0] <<0) + (buf[1] <<8) + (buf[2] << 16) + (buf[3] <<24)
@@ -341,6 +353,7 @@ if args.unpack:
 	    #extract all bitmap and translate the one in the list
 	    extract_list = range(max_rsrc)
 
+	#extract_list = [ 66, 67, 181, 200, 204, 205]
 	for index in extract_list:
 
 	    addr = get_rsrc_addr(index)
@@ -353,7 +366,8 @@ if args.unpack:
 	    get_bmp(index)
 
 	#just for me... uncomment to extract just an image
-	#get_bmp(13)
+	#get_bmp(127)
+	#get_bmp(181)
 
 #pack
 if args.pack:
