@@ -20,7 +20,7 @@
 #http://www.imagemagick.org/discourse-server/viewtopic.php?f=1&t=24193&hilit=clut
 
 
-import sys, struct, os, md5, hashlib, argparse, time, datetime, subprocess, re
+import sys, struct, os, md5, hashlib, argparse, time, datetime, subprocess, re, zlib
 if len(sys.argv) == 2:
     fileName = sys.argv[1]
 
