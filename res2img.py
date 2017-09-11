@@ -330,9 +330,6 @@ def png2raw(idx):
 	#DEBUG: convert -size 84x84+28 -depth 2 +antialias -alpha off -compress NONE gray:_Mili_chao
 	#hu.res/000.raw _Mili_chaohu.res/000clut.png -clut  -type palette BMP3:_Mili_chaohu.res/000.
 
-	print "INDEX "+str(idx)
-	#imgfmt="png"
-
 	raw="%s%s%03d.%s" % (dirName , os.path.sep , idx, "raw")
 	img="%s%s%03d.%s" % (dirName , os.path.sep , idx, imgfmt)
 
@@ -342,22 +339,16 @@ def png2raw(idx):
 	#print "QUI1",raw,os.path.getmtime(raw)
 	#print "QUI1",img,os.path.getmtime(img)
 
-	if os.path.getmtime(raw) != os.path.getmtime(img):
-
-		start=-4
-		palette= []
-		size=0
-		chunk=""
-		transp=0
-		remain=-1
-
+	#if os.path.getmtime(raw)  != os.path.getmtime(img) +20 :
+	if os.path.getmtime(raw)  != os.path.getmtime(img) +0 :
+		print "resource %3d | addr: %x " % ( index, offset )
 		with open(img, mode='rb') as fileRead: # b is important -> binary
 			fileContent = fileRead.read()
 			#fileHeader, version, dummy1, dummmy2 = struct.unpack('8S    5sbHL', fileContent[0:8])
 			fileHeader = struct.unpack('8s', fileContent[0:8])
 			png_header = [ 0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a ]
 
-			pippo= (''.join(chr(l) for l in png_header))
+			#pippo= (''.join(chr(l) for l in png_header))
 
 			if fileContent[0:8] != (''.join(chr(l) for l in png_header)):
 				print "ERROR: %d isn't a png resource" % idx
@@ -365,24 +356,24 @@ def png2raw(idx):
 
 			rawnew=open(raw, mode='wb')
 
-			#while chunk != "IDAT":
+			start=-4
+			palette= []
+			size=0
+			transp=0
+			remain=-1
+			chunk=""
 			while chunk != "IEND":
 				start+=(12+size)
-				print 'startChunk '+str(start)+' chunk: '+str(chunk)+' size '+str(size)
-				#temp=struct.unpack('8s', fileContent[start:start+8])
-				print 1
-				print ":".join("{:02x}".format(ord(c)) for c in (fileContent[start:start+8]))
-				#print (fileContent[start:start+8])
-				print 2
 				size,chunk = struct.unpack('>i4s', fileContent[start:start+8])
-				#print size,chunk
+				#print 'DEBUG png: chunk: '+str(chunk)+" start: "+str(start)+' size: '+str(size)+' +12'
+				#print ":".join("{:02x}".format(ord(c)) for c in (fileContent[start:start+8]))
+
 				# PNG chunk type IHDR
 				if chunk=="IHDR":
 					width, height, depth, color, comp, filt, inter = \
 							struct.unpack('>iibbbbb', fileContent[start+8:start+8+size])
 					row_len=int( width*depth/8.0 +.99)
 					png_colors=pow(2,depth)
-					#print "rowlen "+str(row_len)+" colors: "+str(png_colors)
 					if (color, comp, filt, inter) != (3,0,0,0) :
 						print "ERROR: %d isn't indexed or uncompressed" % idx
 						return 1
@@ -393,58 +384,51 @@ def png2raw(idx):
 					for color in range(0, (size/3) ):
 						r, g, b= struct.unpack('BBB', fileContent[start+8+color*3:start+8+color*3+3])
 						palette.extend( (r, g, b, 0) )
-						#print palette
-						#print palette
-						#print len(palette)
-					print 'palette'
-					print palette[0:3]
+						print "DEBUG: colormap %3x: rgb(%3x,%3x,%3x)" %(color, r,g,b)
 					if palette[0:3]==[254, 254, 0]:
 						#if first colormap entry is 254 254 0 => we consider it as transparent
-						palette[0:3]=[254, 254, 0]
+						print "DEBUG: transparent"
+						palette[0:3]=[255, 255, 0]
 						transp=1
 
 					stride=int(int(width) * int(depth) / 8) + ((int(width) * int(depth) )% 8 > 0)
-					#print "1"
 					header_bmp = [ 0x42, 0x4D, 0x64, 0x00, int(width), 0x00, int(height) , 0x00, 
 							stride, 0x00, int(depth) , 0x00, len(palette) /4, 0,int(transp), 0 ]
-					#print "2"
 					header_bmp.extend(palette)
 					rawnew.write("".join(chr(e) for e in header_bmp))
 
 				# PNG chunk type IDAT 
 				if chunk=="IDAT":
-
 					cursor=0
-					if remain ==-1: #first idat
+
+					if remain ==-1: 
+						#first idat
+						if (ord(fileContent[8+start+cursor]) & 0x0f) != 8 :
+							print "ERROR: %d isn't indexed or uncompressed" % idx
+							return 1
 						cursor+=7 #28 1 1 +  2+2 check
 						remain=0
 
 					#for row_num in range(0, height):
 					while  cursor  < size :
-						#pngfile.write('\00')
-						print cursor
-						print  row_len
-						#rawnew.write(fileContent[start:start+(row_len)])
+						#print "Debug IDAT: cursor: %d row_len: %d size: %d "%(cursor, row_len, size)
 						if remain==0:
+							remain=row_len
 							if ord(fileContent[8+start+cursor]) == 0:
+								#start new row
 								cursor+=1
 							else:
+								#final checksum
 								cursor+=4
-							remain=row_len
 						if ( size - cursor) >= remain:
 							write_len=remain
 							remain=0
 						else:
+							# write a part
 							write_len=size - cursor
 							remain-=write_len
 						rawnew.write(fileContent[8+start+cursor:8+start+cursor+write_len])
 						cursor+=write_len
-					print cursor; size
-
-					#rawnew.close()
-
-					#print "DEBUG: %s" % cmd
-
 			else:
 					pass
 
@@ -457,6 +441,19 @@ def png2raw(idx):
 
 
 def raw2png(idx):
+	####################	
+	# What I understand:
+	# 
+	# a color can be on or off; 
+	# so the three byte are in fact 3 bits and we have 8 colors
+	# to show other colors the faces use dithering
+	#
+	# trick: in case of transparency we set the first color at 254, 254, 0
+	# 
+	# works only on indexed png at the moment
+	#
+	####################
+
 	start = offs + get_rsrc_addr(idx)
 	if idx < max_rsrc:
 	    end = offs + get_rsrc_addr(idx + 1)
@@ -473,9 +470,7 @@ def raw2png(idx):
 
 	width = ord(fileContent[start+4:start+5])
 	height = ord(fileContent[start+6:start+7])
-
 	stride = ord(fileContent[start+8:start+9])
-
 	depth = ord(fileContent[start+0xa:start+0xb])
 	colors = ord(fileContent[start+0xc:start+0xd])
 	transp = ord(fileContent[start+0xe:start+0xf])
@@ -527,20 +522,18 @@ def raw2png(idx):
 		PLTE_chunk=''
 
 		for i in range(palette_len):
-			#print "i: %x" %(16 + i)
 			r=ord(fileContent[start+16+ ( 4*i+0):start+16+ ( 4*i+1)])
 			g=ord(fileContent[start+16+ ( 4*i+1):start+16+ ( 4*i+2)])
 			b=ord(fileContent[start+16+ ( 4*i+2):start+16+ ( 4*i+3)])
 			a=ord(fileContent[start+16+ ( 4*i+3):start+16+ ( 4*i+4)])
-			print "DEBUG: rgb(%d,%d,%d)" %(r,g,b)
-			#palette.extend( (r,g,b) )
+			print "DEBUG: colormap %3x: rgb(%3x,%3x,%3x)" %(i, r,g,b)
 			PLTE_chunk+=chr(r)+chr(g)+chr(b)
 			if a != 0:
 			 	print "DEBUG: alpha(%d)" %a
 				
 		if transp==1:
-			#PLTE_chunk[0:3]='\0xfe\0xfe\0x00'
-			PLTE_chunk='\0xfe\0xfe\0x00'+PLTE_chunk[3:]
+			print "DEBUG: transp"
+			PLTE_chunk='\xfe\xfe\x00'+PLTE_chunk[3:]
 
 		PLTE_len='\x00\x00\x00'+chr(len(PLTE_chunk))
 		PLTE_chunk="PLTE"+ PLTE_chunk
@@ -551,43 +544,37 @@ def raw2png(idx):
 		PLTE_crc=zlib.crc32(PLTE_chunk)
 		PLTE_str= struct.pack('>i',PLTE_crc)
 		pngfile.write(PLTE_str)
-		#start data
 		# PNG chunk IDAT
+		# Only one chunk for a little file
 		pngfile.write( struct.pack('>i',(row_len+1)*height+11))  #data len
-		#pngfile.write('\x49\x44\x41\x54\x48\x0d\x01')#\x1c\x0e\xe3\xf1')
-		#pngfile.write('IDAT\x78\x01\x00')#\x1c\x0e\xe3\xf1')
-		pngfile.write('IDAT\x28\x15\x01')#\x1c\x0e\xe3\xf1')
+		# zlib header
+		#pngfile.write('IDAT\x78\x01\x00')
+		#pngfile.write('IDAT\x78\x11\x01')
+		#pngfile.write('IDAT\x28\x15\x01')
+		pngfile.write('IDAT\x38\x11\x01')
 		pngfile.write( struct.pack('<H',(row_len+1)*height))  #data len
 		pngfile.write( struct.pack('<H',65535-(row_len+1)*height))  #data len
 
 		begin=start+16+ ( palette_len * 4) 
 
 		#print "rowlen "+str(row_len)+" colors: "+str(png_colors)
-		#while begin < end:
 		for row in range (0,height):
-			#print "begin "+str(begin)
-			#pngfile.write('\00')
-			#pngfile.write(fileContent[begin:begin+(row_len)])
 			pngfile.write        ('\00'+fileContent[begin:begin+(row_len)])
 			checksum=zlib.adler32('\00'+fileContent[begin:begin+(row_len)],checksum)
 			begin+=row_len
 			
-		#pngfile.write('\x7a\xf2\xc5\xf6\xe6\x27\x9f\xdc\x00\x00\x00\x00\x49\x45\x4e\x44\xae\x42\x60\x82')
-		#pngfile.write('\x7a\xf2\xc5\xf6\xe6\x27\x9f\xdc')
+		# checksums are wrong, but gimp works ####################
 		pngfile.write( struct.pack('I',checksum&0xffffffff ))  #data len
 		pngfile.write('\xe6\x27\x9f\xdc')
 		# PNG chunk IEND
 		pngfile.write('\x00\x00\x00\x00\x49\x45\x4e\x44\xae\x42\x60\x82')
 
-		#print "DEBUG: %s" % cmd
-		#print "DEBUG: removing "+filename+".pal"
-		#os.unlink(filename+".pal")
+		pngfile.close()
 
-		#print "DEBUG: removing "+filename+".pal"
 		#os.unlink(filename+"clut.png")
 		os.utime(filename+"." + imgfmt, (mtime, mtime))  # Set access/modified times to now
-	# set source and target image to same timestamp. 
-	# we will use timestamp reading later
+		# set source and target image to same timestamp. 
+		# we will use timestamp reading later
 	try:
 	    #os.utime(fname, None)  # Set access/modified times to now
 	    os.utime(filename+".raw", (mtime, mtime))  # Set access/modified times to now
@@ -658,10 +645,11 @@ if args.pack:
 	for i in range(4):
 	    #print (0x14 + index *4 +i), (offset >> 8*i) & 0xFF
 	    header_res[0x14 + index  * 4+i] = (offset >> 8*i) & 0xFF
-        if imgfmt=="png":
-           img = png2raw(index)
-        else:	
-           img = gen_raw(index)
+	#print "resource %3d | addr: %x " % ( index, offset )
+	if imgfmt=="png":
+	   img = png2raw(index)
+	else:	
+	   img = gen_raw(index)
 	
 	header_res.extend(img)
 	offset += len(img)
@@ -670,4 +658,5 @@ if args.pack:
         output.write("".join(chr(c) for c in header_res))
 
     print fileName+".new" + " created"
+
 
