@@ -84,8 +84,6 @@ def packFont(bmp_path, txt_path, font_path):
     font_file.write(characters)
 
     img = Image.open(bmp_path)
-    #cols = img.width // 16
-    #rows = img.height // 16
     cols = img.size[0] // 16
     rows = img.size[1] // 16
     pixels = img.load()
