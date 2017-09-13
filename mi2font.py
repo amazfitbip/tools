@@ -1,4 +1,5 @@
-#!/usr/bin/python
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
 # Simple python command line tool to pack / unpack the Mi Band 2 font firmware files
 
 # (C) José Rebelo
@@ -83,8 +84,10 @@ def packFont(bmp_path, txt_path, font_path):
     font_file.write(characters)
 
     img = Image.open(bmp_path)
-    cols = img.width // 16
-    rows = img.height // 16
+    #cols = img.width // 16
+    #rows = img.height // 16
+    cols = img.size[0] // 16
+    rows = img.size[1] // 16
     pixels = img.load()
 
     for i in range (0, num_characters):
