@@ -546,26 +546,35 @@ def raw2png(idx):
 		pngfile.write(PLTE_str)
 		# PNG chunk IDAT
 		# Only one chunk for a little file
-		pngfile.write( struct.pack('>i',(row_len+1)*height+11))  #data len
+		#pngfile.write( struct.pack('>i',(row_len+1)*height+11))  #data len
 		# zlib header
 		#pngfile.write('IDAT\x78\x01\x00')
 		#pngfile.write('IDAT\x78\x11\x01')
 		#pngfile.write('IDAT\x28\x15\x01')
-		pngfile.write('IDAT\x38\x11\x01')
-		pngfile.write( struct.pack('<H',(row_len+1)*height))  #data len
-		pngfile.write( struct.pack('<H',65535-(row_len+1)*height))  #data len
+		#3 win size, 8 deflate, 00 compress 0 dict 10001 check, 00000001 last
+		#pngfile.write('IDAT\x38\x11\x01')
+		#pngfile.write( struct.pack('<H',(row_len+1)*height))  #data len
+		#pngfile.write( struct.pack('<H',65535-(row_len+1)*height))  #data len
 
 		begin=start+16+ ( palette_len * 4) 
 
 		#print "rowlen "+str(row_len)+" colors: "+str(png_colors)
+		data=''
 		for row in range (0,height):
-			pngfile.write        ('\00'+fileContent[begin:begin+(row_len)])
-			checksum=zlib.adler32('\00'+fileContent[begin:begin+(row_len)],checksum)
+			#pngfile.write        ('\00'+fileContent[begin:begin+(row_len)])
+			#checksum=zlib.adler32('\00'+fileContent[begin:begin+(row_len)],checksum)
+			data+='\00'+fileContent[begin:begin+(row_len)]
 			begin+=row_len
-			
+
+		packed=zlib.compress( data,0 )
+		idat= ''+struct.pack("!I", len(packed)) +'IDAT'+ packed+ struct.pack("!I", 0xFFFFFFFF & zlib.crc32('IDAT'+packed))
+		pngfile.write(idat)
+
 		# checksums are wrong, but gimp works ####################
-		pngfile.write( struct.pack('I',checksum&0xffffffff ))  #data len
-		pngfile.write('\xe6\x27\x9f\xdc')
+		#pngfile.write('\x00\x00\x00\x00')
+		#pngfile.write( struct.pack('I',checksum&0xffffffff ))  #data len
+		#pngfile.write('\xe6\x27\x9f\xdc')
+
 		# PNG chunk IEND
 		pngfile.write('\x00\x00\x00\x00\x49\x45\x4e\x44\xae\x42\x60\x82')
 
