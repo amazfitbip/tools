@@ -52,7 +52,8 @@ if args.debug:
 	logging.basicConfig(level=logging.DEBUG)
 
 if not (args.pack or args.unpack):
-	print "no argument"
+	logging.error("No parameter specified")
+	print parser.print_help()
 	sys.exit(1)
 
 fileName = args.input
