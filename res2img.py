@@ -597,7 +597,7 @@ with open(fileName, mode='rb') as file: # b is important -> binary
 	fileContent = file.read()
 	#https://docs.python.org/3/library/struct.html#format-strings
 	fileHeader = fileContent[0:5]
-	version = ord(fileContent[6:7])
+	version = ord(fileContent[5:6])
 
 	if fileHeader != "HMRES":
 	    print "file isn't a resource file. Exiting"
