@@ -24,7 +24,7 @@ import sys, struct, os, md5, hashlib, argparse, time, datetime, subprocess, re, 
 import logging
 
 if len(sys.argv) == 2:
-    fileName = sys.argv[1]
+	fileName = sys.argv[1]
 
 parser = argparse.ArgumentParser(description='Auto-translate and patch firmware files')
 parser.add_argument('-l', '--language', dest='language', default="en", #choices=["en","it"],.
@@ -64,46 +64,46 @@ dirName = "_"+fileName
 #https://docs.python.org/3/library/struct.html#format-strings
 
 if not os.path.exists(dirName):
-    os.mkdir(dirName)
+	os.mkdir(dirName)
 
 strings_cn = {
-    181: "Mon",
-    182: "Wed",
-    183: "Tue",
-    184: "Fri",
-    185: "Sat",
-    186: "Day", #"Sun",
-    187: "Thu",
-    188: "Sun", #"Dau",
+	181: "Mon",
+	182: "Wed",
+	183: "Tue",
+	184: "Fri",
+	185: "Sat",
+	186: "Day", #"Sun",
+	187: "Thu",
+	188: "Sun", #"Dau",
 
-    #timer menu
-    112: "B sync'ed",
-    #360: "B sync'ed",
-    113: "x disconn",
-    #361: "x disconn",
+	#timer menu
+	112: "B sync'ed",
+	#360: "B sync'ed",
+	113: "x disconn",
+	#361: "x disconn",
 
-    #Main menu
-    294: "Alarm",
-    296: "Compass",
-    298: "Setup",
-    300: "Activity",
-    302: "Home",
-    304: "Timer",
-    306: "Weather",
+	#Main menu
+	294: "Alarm",
+	296: "Compass",
+	298: "Setup",
+	300: "Activity",
+	302: "Home",
+	304: "Timer",
+	306: "Weather",
 
-    #timer menu
-    308: "Countdown",
-    310: "Stop\nwatch",
+	#timer menu
+	308: "Countdown",
+	310: "Stop\nwatch",
 
-    #Activity menu
-     94: "Sports set",
-    317: "Riding",
-    319: "History",
-    321: "Indoor\nrun",
-    323: "Outdoor\nrun",
-    325: "Walking"
+	#Activity menu
+	 94: "Sports set",
+	317: "Riding",
+	319: "History",
+	321: "Indoor\nrun",
+	323: "Outdoor\nrun",
+	325: "Walking"
 
-    #345-362 Cinese2
+	#345-362 Cinese2
 
 }
 
@@ -247,13 +247,13 @@ def raw2png(idx):
 
 	start = offs + get_rsrc_addr(idx)
 	if idx < max_rsrc:
-	    end = offs + get_rsrc_addr(idx + 1)
+		end = offs + get_rsrc_addr(idx + 1)
 	else:
-	    end = -1
+		end = -1
 
 	if fileContent[start:start+2] != "BM":
-	    print "ERROR: %d isn't a bitmap resource" % idx
-	    return 1
+		print "ERROR: %d isn't a bitmap resource" % idx
+		return 1
 
 	m = hashlib.md5()
 	m.update(fileContent[start:end])
@@ -374,10 +374,10 @@ def raw2png(idx):
 		# set source and target image to same timestamp. 
 		# we will use timestamp reading later
 	try:
-	    #os.utime(fname, None)  # Set access/modified times to now
-	    os.utime(filename+".raw", (mtime, mtime))  # Set access/modified times to now
+		#os.utime(fname, None)  # Set access/modified times to now
+		os.utime(filename+".raw", (mtime, mtime))  # Set access/modified times to now
 	except OSError:
-	    print('File has just been deleted between exists() and utime() calls (or no permission)')
+		print('File has just been deleted between exists() and utime() calls (or no permission)')
 
 	
 mtime = time.mktime(datetime.datetime.now().timetuple())
@@ -389,8 +389,8 @@ with open(fileName, mode='rb') as file: # b is important -> binary
 	version = ord(fileContent[5:6])
 
 	if fileHeader != "HMRES":
-	    print "file isn't a resource file. Exiting"
-	    os.exit(1)
+		print "file isn't a resource file. Exiting"
+		os.exit(1)
 	print "file is a Haumi resource file"
 	print "version %d" % version
 
@@ -405,49 +405,45 @@ if args.unpack:
 	offs = 4 * max_rsrc + 0x14
 
 	if args.translate:
-	    #create only translate bitmap
-	    extract_list = strings_cn.keys()
+		#create only translate bitmap
+		extract_list = strings_cn.keys()
 	else:
-	    #extract all bitmap and translate the one in the list
-	    extract_list = range(max_rsrc)
+		#extract all bitmap and translate the one in the list
+		extract_list = range(max_rsrc)
 
 	#extract_list = [ 66, 67, 181, 200, 204, 205]
 	for index in extract_list:
 
-	    addr = get_rsrc_addr(index)
-	    print "resource %3d | addr: %x | pos on file: %x" % ( index, addr, offs + addr )
+		addr = get_rsrc_addr(index)
+		print "resource %3d | addr: %x | pos on file: %x" % ( index, addr, offs + addr )
 
-	    #sys.stdout.write('.')
-	    #sys.stdout.flush()
+		#sys.stdout.write('.')
+		#sys.stdout.flush()
 
-            raw2png(index)
-
-	#just for me... uncomment to extract just an image
-	#get_bmp(127)
-	#get_bmp(181)
+		raw2png(index)
 
 #pack
 if args.pack:
-    header_res = [ 0x48, 0x4D, 0x52, 0x45, 0x53, version , 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF ]
-    #extend the array to make space for number of element and resource's index
-    header_res.extend([0]*( 4 + 4 * max_rsrc))
-    for i in range(4):
-        header_res[0x10 + i] = (max_rsrc >> 8*i) & 0xFF
-
-    offset = 0
-    for index in range(max_rsrc):
+	header_res = [ 0x48, 0x4D, 0x52, 0x45, 0x53, version , 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF ]
+	#extend the array to make space for number of element and resource's index
+	header_res.extend([0]*( 4 + 4 * max_rsrc))
 	for i in range(4):
-	    #print (0x14 + index *4 +i), (offset >> 8*i) & 0xFF
-	    header_res[0x14 + index  * 4+i] = (offset >> 8*i) & 0xFF
-	#print "resource %3d | addr: %x " % ( index, offset )
-	img = png2raw(index)
+		header_res[0x10 + i] = (max_rsrc >> 8*i) & 0xFF
+
+	offset = 0
+	for index in range(max_rsrc):
+		for i in range(4):
+			#print (0x14 + index *4 +i), (offset >> 8*i) & 0xFF
+			header_res[0x14 + index  * 4+i] = (offset >> 8*i) & 0xFF
+		#print "resource %3d | addr: %x " % ( index, offset )
+		img = png2raw(index)
 	
-	header_res.extend(img)
-	offset += len(img)
+		header_res.extend(img)
+		offset += len(img)
 
-    with open(fileName+".new", mode='wb') as output:
-        output.write("".join(chr(c) for c in header_res))
+	with open(fileName+".new", mode='wb') as output:
+		output.write("".join(chr(c) for c in header_res))
 
-    print fileName+".new" + " created"
+		print fileName+".new" + " created"
 
 
