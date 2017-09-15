@@ -116,32 +116,18 @@ def get_rsrc_addr(idx):
 	return addr
 
 def png2raw(idx):
-	#number of resources: 403
-	#resource   0 | addr: 0 | pos on file: 660
-	#idx: 0 - depth 2 bpp - w: 84 - h: 84 - ??? 21 
-	#DEBUG: rgb(255,0,0)
-	#DEBUG: convert -size 84x84+28 -depth 2 +antialias -alpha off -compress NONE gray:_Mili_chao
-	#hu.res/000.raw _Mili_chaohu.res/000clut.png -clut  -type palette BMP3:_Mili_chaohu.res/000.
-
 	raw="%s%s%03d.%s" % (dirName , os.path.sep , idx, "raw")
 	img="%s%s%03d.%s" % (dirName , os.path.sep , idx, "png")
 
 	#the png has been edited... recreate the new raw and load in memory
-	raw="%s%s%03d.%s" % (dirName , os.path.sep , idx, "raw")
-
-	#print "QUI1",raw,os.path.getmtime(raw)
-	#print "QUI1",img,os.path.getmtime(img)
 
 	#if os.path.getmtime(raw)  != os.path.getmtime(img) +20 :
 	if os.path.getmtime(raw)  != os.path.getmtime(img) +0 :
 		print "resource %3d | addr: %x " % ( index, offset )
 		with open(img, mode='rb') as fileRead: # b is important -> binary
 			fileContent = fileRead.read()
-			#fileHeader, version, dummy1, dummmy2 = struct.unpack('8S    5sbHL', fileContent[0:8])
 			fileHeader = struct.unpack('8s', fileContent[0:8])
 			png_header = [ 0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a ]
-
-			#pippo= (''.join(chr(l) for l in png_header))
 
 			if fileContent[0:8] != (''.join(chr(l) for l in png_header)):
 				print "ERROR: %d isn't a png resource" % idx
@@ -153,8 +139,9 @@ def png2raw(idx):
 			palette= []
 			size=0
 			transp=0
-			remain=-1
 			chunk=""
+			row_len=0
+			data=""
 			while chunk != "IEND":
 				start+=(12+size)
 				size,chunk = struct.unpack('>i4s', fileContent[start:start+8])
@@ -168,7 +155,7 @@ def png2raw(idx):
 					row_len=int( width*depth/8.0 +.99)
 					png_colors=pow(2,depth)
 					if (color, comp, filt, inter) != (3,0,0,0) :
-						print "ERROR: %d isn't indexed or uncompressed" % idx
+						print "ERROR: %d isn't a color indexed image" % idx
 						return 1
 				# PNG chunk type sRGB
 				#if chunk=="sRGB":
@@ -192,40 +179,21 @@ def png2raw(idx):
 
 				# PNG chunk type IDAT 
 				if chunk=="IDAT":
-					cursor=0
+					data+=fileContent[start+8:start+8+size]
 
-					if remain ==-1: 
-						#first idat
-						if (ord(fileContent[8+start+cursor]) & 0x0f) != 8 :
-							print "ERROR: %d isn't indexed or uncompressed" % idx
-							return 1
-						cursor+=7 #28 1 1 +  2+2 check
-						remain=0
+			expand=zlib.decompress(data)
 
-					#for row_num in range(0, height):
-					while  cursor  < size :
-						#print "Debug IDAT: cursor: %d row_len: %d size: %d "%(cursor, row_len, size)
-						if remain==0:
-							remain=row_len
-							if ord(fileContent[8+start+cursor]) == 0:
-								#start new row
-								cursor+=1
-							else:
-								#final checksum
-								cursor+=4
-						if ( size - cursor) >= remain:
-							write_len=remain
-							remain=0
-						else:
-							# write a part
-							write_len=size - cursor
-							remain-=write_len
-						rawnew.write(fileContent[8+start+cursor:8+start+cursor+write_len])
-						cursor+=write_len
-			else:
-					pass
-
+			pos=0
+			while (pos < len(expand)):
+				rawnew.write(expand[pos+1:pos+1+row_len])
+				pos+=1+row_len
+				
+			
 			rawnew.close()
+	else:
+		# same mtime
+		pass
+
 
 	with open(raw, mode='rb') as rawimg:
 		img = [ord(c) for c in rawimg.read()]
@@ -284,7 +252,7 @@ def raw2png(idx):
 	if args.translate and idx in list(strings_cn.keys()):
 		string = strings_cn[idx]
 		print "translating %d with %s" % (idx, string)
-		cmd = "convert -depth " + str(depth) + " -alpha off -compress NONE -background black -fill white -font DejaVu-Sans -gravity center -pointsize 9 -size "+str(width)+"x"+str(height)+"  label:\"" + string + "\" " +filename+".png 2>/dev/null"
+		cmd = "convert -depth " + str(depth) + " -alpha off -compress NONE -background black -fill white -font DejaVu-Sans -gravity center -pointsize 9 -size "+str(width)+"x"+str(height)+"  label:\"" + string + "\" -define png:color-type=3 " +filename+".png 2>/dev/null"
 		os.system(cmd)
 		os.utime(filename+".png", (mtime+60, mtime+60))  # Set access/modified times in the future 
 	else:
@@ -339,18 +307,13 @@ def raw2png(idx):
 		# PNG chunk IDAT
 		# Only one chunk for a little file
 		#pngfile.write( struct.pack('>i',(row_len+1)*height+11))  #data len
-		# zlib header
-		#pngfile.write('IDAT\x78\x01\x00')
-		#pngfile.write('IDAT\x78\x11\x01')
-		#pngfile.write('IDAT\x28\x15\x01')
-		#3 win size, 8 deflate, 00 compress 0 dict 10001 check, 00000001 last
+		# zlib header: 3 win size, 8 deflate, 00 compress 0 dict 10001 check, 00000001 last
 		#pngfile.write('IDAT\x38\x11\x01')
 		#pngfile.write( struct.pack('<H',(row_len+1)*height))  #data len
 		#pngfile.write( struct.pack('<H',65535-(row_len+1)*height))  #data len
 
 		begin=start+16+ ( palette_len * 4) 
 
-		#print "rowlen "+str(row_len)+" colors: "+str(png_colors)
 		data=''
 		for row in range (0,height):
 			#pngfile.write        ('\00'+fileContent[begin:begin+(row_len)])
@@ -362,10 +325,9 @@ def raw2png(idx):
 		idat= ''+struct.pack("!I", len(packed)) +'IDAT'+ packed+ struct.pack("!I", 0xFFFFFFFF & zlib.crc32('IDAT'+packed))
 		pngfile.write(idat)
 
-		# checksums are wrong, but gimp works ####################
+		# fixed: checksums are wrong, but gmp works ####################
 		#pngfile.write('\x00\x00\x00\x00')
 		#pngfile.write( struct.pack('I',checksum&0xffffffff ))  #data len
-		#pngfile.write('\xe6\x27\x9f\xdc')
 
 		# PNG chunk IEND
 		pngfile.write('\x00\x00\x00\x00\x49\x45\x4e\x44\xae\x42\x60\x82')
