@@ -5,7 +5,19 @@ import os,sys,argparse,re
 reload(sys)  
 sys.setdefaultencoding('utf8')
 
-from googletrans import Translator
+try:
+    from googletrans import Translator
+except:
+    print "googletrans or one of its dependencies missing"
+    print "to get this tool working execute following instructions:"
+    if sys.platform == "win32" and sys.hexversion < 0x2070900:
+	print "Download https://bootstrap.pypa.io/get-pip.py"
+	print "python get-pip.py"
+    print "pip install googletrans"
+    print
+    print "follow instruction and restart the script"
+    sys.exit(1)
+
 translator = Translator()
 #translator.translate('안녕하세요.')
 # <Translated src=ko dest=en text=Good evening. pronunciation=Good evening.>

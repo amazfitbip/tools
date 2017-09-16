@@ -8,6 +8,10 @@ This is a suite of tools to make easier to translate and tweak Amazfit bip (A160
 Usually each tool have its -h flag that allow you to understand better how it works.
 
 
+Requirements:  
+Python  2.7.x
+
+
 res2img.py
 ----------
 
@@ -32,9 +36,6 @@ it will generate splitted a number of raw file and for each file a correspondent
 
 The program generate some temporary file like a textual palette and a mask to be applied to the grayscale image to get the indexed one. By tweaking the program is possible to keep souch files.
 
-Requirements:  
-convert command from imagemagick suite
-
 zh-cn2en.py
 ----------
 
@@ -42,9 +43,6 @@ zh-cn2en.py
 
 Process zh-cn2en.txt by looking for hex string pattern, connect to google translate and add the english translation to the txt file
 this tool can be useful for replacing string from chinese to english
-
-Requirements:  
-https://github.com/ssut/py-googletrans.git
 
 
 zh-check_translation.py
