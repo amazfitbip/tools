@@ -25,7 +25,7 @@ new_ = {}
 version = ''
 with open(args.output, 'r') as f:
 	version = f.readline()
-	for line in f.readlines():
+	for i, line in enumerate(f.readlines()):
 		addr, hex_, cn, lang = line.split('|')
 		if cn not in new_:
 			new_[cn] = []
@@ -33,20 +33,27 @@ with open(args.output, 'r') as f:
 			'addr': addr,
 			'hex': hex_,
 			'cn': cn,
-			'lang': lang
+			'lang': lang,
+			'pos': i
 		})
 
 tmp_out_filename = args.output + ".out"
 bak_out_filename = args.output + ".bak"
+out_list = []
+
+for k in new_:
+	if k in old:
+		for item in new_[k]:
+			out_list.append((item['pos'], '%(addr)s|%(hex)s|%(cn)s|' % item + old[k]))
+	else:
+		for item in new_[k]:
+			out_list.append((item['pos'], '%(addr)s|%(hex)s|%(cn)s|%(lang)s' % item))
+
 with open(tmp_out_filename, 'w') as f:
 	f.write(version)
-	for k in new_:
-		if k in old:
-			for item in new_[k]:
-				f.write('%(addr)s|%(hex)s|%(cn)s|' % item + old[k])
-		else:
-			for item in new_[k]:
-				f.write('%(addr)s|%(hex)s|%(cn)s|%(lang)s' % item)
+	for item in sorted(out_list, key=lambda x: x[0]):
+		f.write(item[1])
+
 
 os.rename(args.output, bak_out_filename)
 os.rename(tmp_out_filename, args.output)
