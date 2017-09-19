@@ -257,7 +257,7 @@ def raw2png(idx):
 		os.utime(filename+".png", (mtime+60, mtime+60))  # Set access/modified times in the future 
 	else:
 		checksum=0
-		pngfile =open(filename+".png","w")
+		pngfile =open(filename+".png","wb")
 		# PNG header
 		png_header = [ 0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a ]
 		pngfile.write(''.join(map(chr,png_header)))
