@@ -116,6 +116,8 @@ def get_rsrc_addr(idx):
 	return addr
 
 def png2raw(idx):
+	warn=''
+
 	raw="%s%s%03d.%s" % (dirName , os.path.sep , idx, "raw")
 	img="%s%s%03d.%s" % (dirName , os.path.sep , idx, "png")
 
@@ -157,11 +159,14 @@ def png2raw(idx):
 					if (color, comp, filt, inter) != (3,0,0,0) :
 						print "ERROR: %d isn't a color indexed image" % idx
 						return 1
+					#print width,depth,row_len
+					#logging.debug("rowlen %x ")%row_len #rgb(%3x,%3x,%3x)" %(row_len, r,g,b))
 				# PNG chunk type sRGB
 				#if chunk=="sRGB":
 				# PNG chunk type PLTE .. palette
 				if chunk=="PLTE":
-					for color in range(0, (size/3) ):
+					colors_number=(size/3)
+					for color in range(0, colors_number): 
 						r, g, b= struct.unpack('BBB', fileContent[start+8+color*3:start+8+color*3+3])
 						palette.extend( (r, g, b, 0) )
 						logging.debug("colormap %3x: rgb(%3x,%3x,%3x)" %(color, r,g,b))
@@ -170,6 +175,9 @@ def png2raw(idx):
 						logging.debug("transparent")
 						palette[0:3]=[255, 255, 0]
 						transp=1
+
+					if colors_number > 9:
+						warn="ERROR:--- RES %d HAS %d COLORS (Bip has 8:blk wht red grn blu yel mag cyan)\n"%(index,colors_number)
 
 					stride=int(int(width) * int(depth) / 8) + ((int(width) * int(depth) )% 8 > 0)
 					header_bmp = [ 0x42, 0x4D, 0x64, 0x00, int(width), 0x00, int(height) , 0x00, 
@@ -198,7 +206,7 @@ def png2raw(idx):
 	with open(raw, mode='rb') as rawimg:
 		img = [ord(c) for c in rawimg.read()]
 
-	return img
+	return (img,warn)
 
 def raw2png(idx):
 	####################	
@@ -394,15 +402,20 @@ if args.pack:
 		header_res[0x10 + i] = (max_rsrc >> 8*i) & 0xFF
 
 	offset = 0
+	warnings=''
 	for index in range(max_rsrc):
 		for i in range(4):
 			#print (0x14 + index *4 +i), (offset >> 8*i) & 0xFF
 			header_res[0x14 + index  * 4+i] = (offset >> 8*i) & 0xFF
 		#print "resource %3d | addr: %x " % ( index, offset )
-		img = png2raw(index)
+		img,warn = png2raw(index)
 	
 		header_res.extend(img)
 		offset += len(img)
+		if warn != '':
+			warnings+=warn
+	if warnings:
+		print "\n\n"+ warnings
 
 	with open(fileName+".new", mode='wb') as output:
 		output.write("".join(chr(c) for c in header_res))
