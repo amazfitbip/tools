@@ -23,18 +23,19 @@ small tool to convert amazfit bip resource file to a standard image file.
 
   edit your bmp you will find in a new direcory freshly created  
 
-./res2img.py -p  
+./res2img.py -p [-i Mili_chaohu.res]
 
   repack the res file with new name  
 
-
-small tool to convert amazfit bip resource file to a standard image file.
-
 if you call it without any parameter actually it will look for "Mili_chaohu.res_3.0.4"
 
-it will generate splitted a number of raw file and for each file a correspondent jpg file.
+it will generate splitted a number of raw file and for each file a correspondent png file.
 
-The program generate some temporary file like a textual palette and a mask to be applied to the grayscale image to get the indexed one. By tweaking the program is possible to keep souch files.
+*** The bip display has 8 colors only (black, white, red, green, blue, yellow, cyan, magenta)
+The stock res only uses 0 or 255 as r g b values. 
+If a resource uses transparent we translate this as 254,254,0 in the png
+If a png uses 254,254,0 as first color we use it as transparent creating that resource ***  
+
 
 zh-cn2en.py
 ----------
