@@ -183,7 +183,11 @@ def png2raw(idx):
 					header_bmp = [ 0x42, 0x4D, 0x64, 0x00, int(width), 0x00, int(height) , 0x00, 
 							stride, 0x00, int(depth) , 0x00, len(palette) /4, 0,int(transp), 0 ]
 					header_bmp.extend(palette)
-					rawnew.write("".join(chr(e) for e in header_bmp))
+					try:
+						rawnew.write("".join(chr(e) for e in header_bmp))
+					except ValueError:
+						print warn
+						return 1
 
 				# PNG chunk type IDAT 
 				if chunk=="IDAT":
