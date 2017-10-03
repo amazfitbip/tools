@@ -267,7 +267,7 @@ def raw2png(idx):
 		cmd = "convert -depth " + str(depth) + " -alpha off -compress NONE -background black -fill white -font DejaVu-Sans -gravity center -pointsize 9 -size "+str(width)+"x"+str(height)+"  label:\"" + string + "\" -define png:color-type=3 " +filename+".png 2>/dev/null"
 		os.system(cmd)
 		os.utime(filename+".png", (mtime+60, mtime+60))  # Set access/modified times in the future 
-	else:
+	elif fileContent[start:start+3] == "BMd" and palette_len <16:
 		checksum=0
 		pngfile =open(filename+".png","wb")
 		# PNG header
@@ -346,6 +346,13 @@ def raw2png(idx):
 
 		pngfile.close()
 		os.utime(filename+".png", (mtime, mtime))  # Set access/modified times to now
+	elif fileContent[start:start+3] == "BMd" and palette_len >= 16:
+		print("RAW image indexed with unknown format - Convertion still unsupported")
+	elif fileContent[start:start+2] == "BM" and ord(fileContent[start+2:start+3]) == 8:
+		print("RAW image format RGB565 - Convertion still unsupported")
+	else:
+		print("RAW image format unknown 0x%02x" % ord(fileContent[start+2:start+3]))
+
 		# set source and target image to same timestamp. 
 		# we will use timestamp reading later
 	try:
