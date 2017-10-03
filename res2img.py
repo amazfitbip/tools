@@ -267,7 +267,7 @@ def raw2png(idx):
 		cmd = "convert -depth " + str(depth) + " -alpha off -compress NONE -background black -fill white -font DejaVu-Sans -gravity center -pointsize 9 -size "+str(width)+"x"+str(height)+"  label:\"" + string + "\" -define png:color-type=3 " +filename+".png 2>/dev/null"
 		os.system(cmd)
 		os.utime(filename+".png", (mtime+60, mtime+60))  # Set access/modified times in the future 
-	else:
+	elif fileContent[start:start+3] == "BMd" and palette_len <16:
 		checksum=0
 		pngfile =open(filename+".png","wb")
 		# PNG header
@@ -346,6 +346,110 @@ def raw2png(idx):
 
 		pngfile.close()
 		os.utime(filename+".png", (mtime, mtime))  # Set access/modified times to now
+	elif fileContent[start:start+3] == "BMd" and palette_len >= 16:
+		print("RAW image indexed with unknown format - Convertion still unsupported")
+	elif fileContent[start:start+2] == "BM" and ord(fileContent[start+2:start+3]) == 8:
+		print("RAW image format RGB565")
+		checksum=0
+		pngfile =open(filename+".png","wb")
+		# PNG header
+		png_header = [ 0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a ]
+		pngfile.write(''.join(map(chr,png_header)))
+		# PNG chunk iHDR 
+		iHDR_len =  [ 0x00, 0x00, 0x00, 0x0d]
+		iHDR_chunk = [ 0x49, 0x48, 0x44, 0x52, 0x00, 0x00, 0x00, int(width), \
+				0x00, 0x00, 0x00,  int(height), int(depth/2), 0x02, 0,0,0 ]
+		iHDR_crc=zlib.crc32(''.join(map(chr,iHDR_chunk)))
+		pngfile.write(''.join(chr(i) for i in iHDR_len))
+		pngfile.write(''.join(chr(i) for i in iHDR_chunk))
+		iHDR_str= struct.pack('>i',iHDR_crc)
+		pngfile.write(iHDR_str)
+		# PNG chunk sRGB
+		sRGB_chunk= '\x00\x00\x00\x01\x73\x52\x47\x42\x00\xae\xce\x1c\xe9'
+		pngfile.write(sRGB_chunk)
+
+		row_len=int( width*depth/8.0 +.99)
+
+		png_colors=pow(2,depth)
+
+
+		begin=start+16
+
+		data=''
+		for row in range (0,height):
+			data+='\00'
+			for c in range(row_len/2):
+				p= ord(fileContent[begin+c*2:begin+c*2+1])
+				p+= ord(fileContent[begin+c*2+1:begin+c*2+2]) * 0x100
+#				print ("%04x" % p)
+				r = p >> 11
+				g = (p >> 5) & 0x3f
+				b = p & 0x1f
+				r = int(round( (r * 255) / 31.0 ))
+				g = int(round( (g * 255) / 63.0 ))
+				b = int(round( (b * 255) / 31.0 ))
+#				print "%02x %02x %02x" % (r,g,b)
+				#data+='\00'+chr(r & 0xff)+chr(r>>8)+chr(g&0xff)+chr(g>>8)+chr(b & 0xff)+chr(b>>8)
+				data+=chr(r)+chr(g)+chr(b)
+			begin+=row_len
+
+		packed=zlib.compress( data,0 )
+		idat= ''+struct.pack("!I", len(packed)) +'IDAT'+ packed+ struct.pack("!I", 0xFFFFFFFF & zlib.crc32('IDAT'+packed))
+		pngfile.write(idat)
+
+		# PNG chunk IEND
+		pngfile.write('\x00\x00\x00\x00\x49\x45\x4e\x44\xae\x42\x60\x82')
+
+		pngfile.close()
+		os.utime(filename+".png", (mtime, mtime))  # Set access/modified times to now
+	elif fileContent[start:start+2] == "BM" and ord(fileContent[start+2:start+3]) == 27:
+		print("RAW image format RGB")
+		checksum=0
+		pngfile =open(filename+".png","wb")
+		# PNG header
+		png_header = [ 0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a ]
+		pngfile.write(''.join(map(chr,png_header)))
+		# PNG chunk iHDR 
+		iHDR_len =  [ 0x00, 0x00, 0x00, 0x0d]
+		iHDR_chunk = [ 0x49, 0x48, 0x44, 0x52, 0x00, 0x00, 0x00, int(width), \
+				0x00, 0x00, 0x00,  int(height), int(depth/3), 0x02, 0,0,0 ]
+		iHDR_crc=zlib.crc32(''.join(map(chr,iHDR_chunk)))
+		pngfile.write(''.join(chr(i) for i in iHDR_len))
+		pngfile.write(''.join(chr(i) for i in iHDR_chunk))
+		iHDR_str= struct.pack('>i',iHDR_crc)
+		pngfile.write(iHDR_str)
+		# PNG chunk sRGB
+		sRGB_chunk= '\x00\x00\x00\x01\x73\x52\x47\x42\x00\xae\xce\x1c\xe9'
+		pngfile.write(sRGB_chunk)
+
+		row_len=int( width*depth/8.0 +.99)
+
+		png_colors=pow(2,depth)
+
+
+		begin=start+16
+
+		data=''
+		for row in range (0,height):
+			#pngfile.write        ('\00'+fileContent[begin:begin+(row_len)])
+			#checksum=zlib.adler32('\00'+fileContent[begin:begin+(row_len)],checksum)
+			data+='\00'+fileContent[begin:begin+(row_len)]
+			begin+=row_len
+
+		packed=zlib.compress( data,0 )
+		idat= ''+struct.pack("!I", len(packed)) +'IDAT'+ packed+ struct.pack("!I", 0xFFFFFFFF & zlib.crc32('IDAT'+packed))
+		pngfile.write(idat)
+
+		# PNG chunk IEND
+		pngfile.write('\x00\x00\x00\x00\x49\x45\x4e\x44\xae\x42\x60\x82')
+
+		pngfile.close()
+		os.utime(filename+".png", (mtime, mtime))  # Set access/modified times to now
+	elif fileContent[start:start+2] == "BM" and ord(fileContent[start+2:start+3]) == 16:
+		print("RAW image format rgba-WIP")
+	else:
+		print("RAW image format unknown 0x%02x" % ord(fileContent[start+2:start+3]))
+
 		# set source and target image to same timestamp. 
 		# we will use timestamp reading later
 	try:

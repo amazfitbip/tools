@@ -71,6 +71,11 @@ def packFont(bmp_path, txt_path, font_path):
     characters = txt_file.read()
     num_characters = len(characters) // 2
 
+    # sort the characters, keep track of each index
+    chars_arr = str(characters, 'utf-16le')
+    chars_idx = range(num_characters)
+    chars = list(sorted(zip(chars_arr, chars_idx)))
+
     # header, taken from Mili_pro.ft.en
     header = bytearray(binascii.unhexlify('484D5A4B01FFFFFFFF00FFFFFFFFCA00'))
     # header, taken from Mili_pro.ft
@@ -80,24 +85,28 @@ def packFont(bmp_path, txt_path, font_path):
     header[15] = l[0]
     font_file.write(header)
 
-    # write the characters
-    font_file.write(characters)
-
     img = Image.open(bmp_path)
     cols = img.size[0] // 16
     rows = img.size[1] // 16
-    pixels = img.load()
+    img_rgb = img.convert('RGB')
+    pixels = img_rgb.load()
 
     for i in range (0, num_characters):
-        row = i // cols
-        col = i % cols
+    	font_file.write(chars[i][0].encode('utf-16le'))
+
+    for i in range (0, num_characters):
+        idx = chars[i][1]
+        row = idx // cols
+        col = idx % cols
         x = 0
         y = 0
 
         while y < 16:
             b = 0
             for i in range(0, 8):
-                b = b | ((pixels[col * 16 + x, row * 16 + y] & 1) << (7 - i))
+                if pixels[col * 16 + x, row * 16 + y] != (0, 0, 0):
+                    b = b | (1 << (7 - i))
+
                 x += 1
                 if x == 16:
                     x = 0
@@ -105,10 +114,10 @@ def packFont(bmp_path, txt_path, font_path):
             font_file.write(b.to_bytes(1, 'big'))
 
 if len(sys.argv) == 3 and sys.argv[1] == 'unpack':
-	unpackFont(sys.argv[2])
+    unpackFont(sys.argv[2])
 elif len(sys.argv) == 5 and sys.argv[1] == 'pack':
-	packFont(sys.argv[2], sys.argv[3], sys.argv[4])
+    packFont(sys.argv[2], sys.argv[3], sys.argv[4])
 else:
-	print('Usage:')
-	print('   python', sys.argv[0], 'unpack Mili_pro.ft.en')
-	print('   python', sys.argv[0], 'pack Mili_pro.ft.en.bmp Mili_pro.ft.en.txt out.ft.en')
+    print('Usage:')
+    print('   python', sys.argv[0], 'unpack Mili_pro.ft.en')
+    print('   python', sys.argv[0], 'pack Mili_pro.ft.en.bmp Mili_pro.ft.en.txt out.ft.en')
