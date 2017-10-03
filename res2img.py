@@ -445,6 +445,8 @@ def raw2png(idx):
 
 		pngfile.close()
 		os.utime(filename+".png", (mtime, mtime))  # Set access/modified times to now
+	elif fileContent[start:start+2] == "BM" and ord(fileContent[start+2:start+3]) == 16:
+		print("RAW image format rgba-WIP")
 	else:
 		print("RAW image format unknown 0x%02x" % ord(fileContent[start+2:start+3]))
 
