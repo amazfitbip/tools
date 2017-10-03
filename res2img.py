@@ -180,8 +180,10 @@ def png2raw(idx):
 						warn="ERROR:--- RES %d HAS %d COLORS (Bip has 8:blk wht red grn blu yel mag cyan)\n"%(index,colors_number)
 
 					stride=int(int(width) * int(depth) / 8) + ((int(width) * int(depth) )% 8 > 0)
+					lenp=len(palette)/4
 					header_bmp = [ 0x42, 0x4D, 0x64, 0x00, int(width), 0x00, int(height) , 0x00, 
-							stride, 0x00, int(depth) , 0x00, len(palette) /4, 0,int(transp), 0 ]
+							stride, 0x00, int(depth) , (lenp>>8)&255, lenp&255 , 0,int(transp), 0 ]
+					#		stride, 0x00, int(depth) , 0x00, len(palette) /4, 0,int(transp), 0 ]
 					header_bmp.extend(palette)
 					try:
 						rawnew.write("".join(chr(e) for e in header_bmp))
@@ -267,7 +269,8 @@ def raw2png(idx):
 		cmd = "convert -depth " + str(depth) + " -alpha off -compress NONE -background black -fill white -font DejaVu-Sans -gravity center -pointsize 9 -size "+str(width)+"x"+str(height)+"  label:\"" + string + "\" -define png:color-type=3 " +filename+".png 2>/dev/null"
 		os.system(cmd)
 		os.utime(filename+".png", (mtime+60, mtime+60))  # Set access/modified times in the future 
-	elif fileContent[start:start+3] == "BMd" and palette_len <16:
+	#elif fileContent[start:start+3] == "BMd" and palette_len <16:
+	elif fileContent[start:start+3] == "BMd" :
 		checksum=0
 		pngfile =open(filename+".png","wb")
 		# PNG header
@@ -307,7 +310,10 @@ def raw2png(idx):
 			logging.debug("transp")
 			PLTE_chunk='\xfe\xfe\x00'+PLTE_chunk[3:]
 
-		PLTE_len='\x00\x00\x00'+chr(len(PLTE_chunk))
+		
+		#PLTE_len='\x00\x00\x00'+chr(len(PLTE_chunk))
+		lenp=len(PLTE_chunk)
+		PLTE_len='\x00\x00'+chr((lenp>>8)&255)+chr(lenp&255)
 		PLTE_chunk="PLTE"+ PLTE_chunk
 
 		# write palette
