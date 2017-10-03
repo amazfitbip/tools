@@ -349,7 +349,7 @@ def raw2png(idx):
 	elif fileContent[start:start+3] == "BMd" and palette_len >= 16:
 		print("RAW image indexed with unknown format - Convertion still unsupported")
 	elif fileContent[start:start+2] == "BM" and ord(fileContent[start+2:start+3]) == 8:
-		print("RAW image format RGB565 - Convertion still unsupported - WIP")
+		print("RAW image format RGB565")
 		checksum=0
 		pngfile =open(filename+".png","wb")
 		# PNG header
@@ -372,50 +372,13 @@ def raw2png(idx):
 
 		png_colors=pow(2,depth)
 
-#		# PNG chunk PLTE: palette
-#		PLTE_chunk=''
-#
-#		for i in range(palette_len):
-#			r=ord(fileContent[start+16+ ( 4*i+0):start+16+ ( 4*i+1)])
-#			g=ord(fileContent[start+16+ ( 4*i+1):start+16+ ( 4*i+2)])
-#			b=ord(fileContent[start+16+ ( 4*i+2):start+16+ ( 4*i+3)])
-#			a=ord(fileContent[start+16+ ( 4*i+3):start+16+ ( 4*i+4)])
-#			logging.debug("colormap %3x: rgb(%3x,%3x,%3x)" %(i, r,g,b))
-#			PLTE_chunk+=chr(r)+chr(g)+chr(b)
-#			if a != 0:
-#			 	logging.debug("alpha(%d)" %a)
-#				
-#		if transp==1:
-#			logging.debug("transp")
-#			PLTE_chunk='\xfe\xfe\x00'+PLTE_chunk[3:]
-#
-#		PLTE_len='\x00\x00\x00'+chr(len(PLTE_chunk))
-#		PLTE_chunk="PLTE"+ PLTE_chunk
 
-		# write palette
-#		pngfile.write(PLTE_len)
-#		pngfile.write(PLTE_chunk)
-#		PLTE_crc=zlib.crc32(PLTE_chunk)
-#		PLTE_str= struct.pack('>i',PLTE_crc)
-#		pngfile.write(PLTE_str)
-		# PNG chunk IDAT
-		# Only one chunk for a little file
-		#pngfile.write( struct.pack('>i',(row_len+1)*height+11))  #data len
-		# zlib header: 3 win size, 8 deflate, 00 compress 0 dict 10001 check, 00000001 last
-		#pngfile.write('IDAT\x38\x11\x01')
-		#pngfile.write( struct.pack('<H',(row_len+1)*height))  #data len
-		#pngfile.write( struct.pack('<H',65535-(row_len+1)*height))  #data len
-
-		begin=start+16 #+ ( palette_len * 4) 
+		begin=start+16
 
 		data=''
 		for row in range (0,height):
-			#pngfile.write        ('\00'+fileContent[begin:begin+(row_len)])
-			#checksum=zlib.adler32('\00'+fileContent[begin:begin+(row_len)],checksum)
 			data+='\00'
 			for c in range(row_len/2):
-#de4e = 4adbf7
-#56910 --> 74
 				p= ord(fileContent[begin+c*2:begin+c*2+1])
 				p+= ord(fileContent[begin+c*2+1:begin+c*2+2]) * 0x100
 #				print ("%04x" % p)
@@ -434,9 +397,48 @@ def raw2png(idx):
 		idat= ''+struct.pack("!I", len(packed)) +'IDAT'+ packed+ struct.pack("!I", 0xFFFFFFFF & zlib.crc32('IDAT'+packed))
 		pngfile.write(idat)
 
-		# fixed: checksums are wrong, but gmp works ####################
-		#pngfile.write('\x00\x00\x00\x00')
-		#pngfile.write( struct.pack('I',checksum&0xffffffff ))  #data len
+		# PNG chunk IEND
+		pngfile.write('\x00\x00\x00\x00\x49\x45\x4e\x44\xae\x42\x60\x82')
+
+		pngfile.close()
+		os.utime(filename+".png", (mtime, mtime))  # Set access/modified times to now
+	elif fileContent[start:start+2] == "BM" and ord(fileContent[start+2:start+3]) == 27:
+		print("RAW image format RGB")
+		checksum=0
+		pngfile =open(filename+".png","wb")
+		# PNG header
+		png_header = [ 0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a ]
+		pngfile.write(''.join(map(chr,png_header)))
+		# PNG chunk iHDR 
+		iHDR_len =  [ 0x00, 0x00, 0x00, 0x0d]
+		iHDR_chunk = [ 0x49, 0x48, 0x44, 0x52, 0x00, 0x00, 0x00, int(width), \
+				0x00, 0x00, 0x00,  int(height), int(depth/3), 0x02, 0,0,0 ]
+		iHDR_crc=zlib.crc32(''.join(map(chr,iHDR_chunk)))
+		pngfile.write(''.join(chr(i) for i in iHDR_len))
+		pngfile.write(''.join(chr(i) for i in iHDR_chunk))
+		iHDR_str= struct.pack('>i',iHDR_crc)
+		pngfile.write(iHDR_str)
+		# PNG chunk sRGB
+		sRGB_chunk= '\x00\x00\x00\x01\x73\x52\x47\x42\x00\xae\xce\x1c\xe9'
+		pngfile.write(sRGB_chunk)
+
+		row_len=int( width*depth/8.0 +.99)
+
+		png_colors=pow(2,depth)
+
+
+		begin=start+16
+
+		data=''
+		for row in range (0,height):
+			#pngfile.write        ('\00'+fileContent[begin:begin+(row_len)])
+			#checksum=zlib.adler32('\00'+fileContent[begin:begin+(row_len)],checksum)
+			data+='\00'+fileContent[begin:begin+(row_len)]
+			begin+=row_len
+
+		packed=zlib.compress( data,0 )
+		idat= ''+struct.pack("!I", len(packed)) +'IDAT'+ packed+ struct.pack("!I", 0xFFFFFFFF & zlib.crc32('IDAT'+packed))
+		pngfile.write(idat)
 
 		# PNG chunk IEND
 		pngfile.write('\x00\x00\x00\x00\x49\x45\x4e\x44\xae\x42\x60\x82')
