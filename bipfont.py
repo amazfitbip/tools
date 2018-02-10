@@ -25,7 +25,7 @@ def unpackFont(font_path):
 	print('Unpacking', font_path)
 	
 	font_file = open(font_path, 'rb')
-	font_path.join(font_path.split('\\')[:-1])
+	font_path.join(font_path.split(os.sep)[:-1])
 	if not os.path.exists('bmp'):
 		os.makedirs('bmp')
 	# header = 16 bytes
@@ -59,7 +59,7 @@ def unpackFont(font_path):
 					x = 0
 					y += 1
 		margin_top = font_file.read(1)
-		img.save("bmp\\" + '{:04x}'.format(startrange) + str(margin_top[0] % 16) + '.bmp') 
+		img.save("bmp" + os.sep + '{:04x}'.format(startrange) + str(margin_top[0] % 16) + '.bmp') 
 		
 		startrange += 1
 		if startrange > endrange and range_nr+1 < num_ranges:
@@ -78,7 +78,7 @@ def packFont(font_path):
 	seq_nr = 0
 	startrange = -1
 	
-	bmp_files = glob.glob('bmp\\*')
+	bmp_files = sorted(glob.glob('bmp' +  os.sep + '*'))
 
 	for i in range (0, len(bmp_files)):
 		margin_top = int(bmp_files[i][8])
