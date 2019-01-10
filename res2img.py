@@ -110,7 +110,7 @@ strings_cn = {
 
 
 def get_rsrc_addr(idx):
-	ptr = (4 * idx + 0x14)
+	ptr = (4 * idx + 0x24)
 	buf = [ ord(elem) for elem in fileContent[ptr:ptr+4]]
 	addr = (buf[0] <<0) + (buf[1] <<8) + (buf[2] << 16) + (buf[3] <<24)
 	return addr
@@ -363,13 +363,13 @@ with open(fileName, mode='rb') as file: # b is important -> binary
 	fileHeader = fileContent[0:5]
 	version = ord(fileContent[5:6])
 
-	if fileHeader != "HMRES":
+	if fileHeader != "NERES":
 		print "file isn't a resource file. Exiting"
 		os.exit(1)
 	print "file is a Haumi resource file"
 	print "version %d" % version
 
-	buf = [ ord(elem) for elem in fileContent[0x10:0x10+4]]
+	buf = [ ord(elem) for elem in fileContent[0x20:0x20+4]]
 	max_rsrc = (buf[0] <<0) + (buf[1] <<8) + (buf[2] << 16) + (buf[3] <<24)
 
 	print "number of resources: %d" % max_rsrc
@@ -377,7 +377,7 @@ with open(fileName, mode='rb') as file: # b is important -> binary
 #unpack
 if args.unpack:
 
-	offs = 4 * max_rsrc + 0x14
+	offs = 4 * max_rsrc + 0x24
 
 	if args.translate:
 		#create only translate bitmap
@@ -399,18 +399,19 @@ if args.unpack:
 
 #pack
 if args.pack:
-	header_res = [ 0x48, 0x4D, 0x52, 0x45, 0x53, version , 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF ]
+	header_res = [ 0x4E, 0x45, 0x52, 0x45, 0x53, version , 0xFF, 0xFF, 0xFF, 0xFF, 0x03, 0x00, 0x00, 0x00, 0xFF, 0xFF,
+				   0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF ]
 	#extend the array to make space for number of element and resource's index
 	header_res.extend([0]*( 4 + 4 * max_rsrc))
 	for i in range(4):
-		header_res[0x10 + i] = (max_rsrc >> 8*i) & 0xFF
+		header_res[0x20 + i] = (max_rsrc >> 8*i) & 0xFF
 
 	offset = 0
 	warnings=''
 	for index in range(max_rsrc):
 		for i in range(4):
-			#print (0x14 + index *4 +i), (offset >> 8*i) & 0xFF
-			header_res[0x14 + index  * 4+i] = (offset >> 8*i) & 0xFF
+			#print (0x24 + index *4 +i), (offset >> 8*i) & 0xFF
+			header_res[0x24 + index  * 4+i] = (offset >> 8*i) & 0xFF
 		#print "resource %3d | addr: %x " % ( index, offset )
 		img,warn = png2raw(index)
 	
